@@ -1,0 +1,39 @@
+use_shs: False
+use_grid_randomization: False
+
+# single_clift_cloth_3: object point count from final_data.pkl
+num_object_points: 8158
+
+scene:
+  table_splat_path: 'log/gs/scans/scene_gripper/scene_gripper.ply'
+  total_mask_path: 'log/gs/scans/scene_gripper/scene_gripper_mask.npy'
+  color_A: [
+    -0.218, 1.491, 0.410, 1.006, -1.334, -0.439,
+    -0.396, 1.112, 0.665, 0.876, -0.996, -0.422,
+    -0.174, 0.438, 0.985, 0.452, -0.302, -0.579
+  ]
+  color_b: [
+      0.162, 0.123, 0.070
+  ]
+
+object:
+  path: 'log/gs/scans/cloth4/cloth4.ply'
+  # 180 deg rotation around x-axis
+  pose: [
+    1.0, 0.0, 0.0, 0.4,
+    0.0, -1.0, 0.0, 0.0,
+    0.0, 0.0, -1.0, 0.05,
+    0.0, 0.0, 0.0, 1.0
+  ]
+  translation_range: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  azimuth_range: [0, 0]
+  color_A: [
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0
+  ]
+  color_b: [
+    0.0, 0.0, 0.0
+  ]
+
+meshes: []

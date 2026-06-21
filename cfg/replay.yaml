@@ -1,0 +1,143 @@
+defaults:
+  - env: xarm_gripper
+  - gs: rope
+  - physics: default
+  - policy: default
+  - renderer: default
+  - _self_
+  - override hydra/job_logging: disabled
+  - override hydra/hydra_logging: disabled
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+seed: 0
+
+env_name: BaseEnv-v0
+obs_mode: rgbd
+randomize: true
+
+exp_root: log/experiments
+timestamp: null  # whether to overwrite the timestamp
+
+online: False  # whether to use viser visualization
+viser_port: 6789
+
+# Render output options
+save_depth: false  # whether to save depth maps during replay rendering
+save_arm_soft_mesh_rgba: false  # whether to additionally save arm+soft+mesh RGBA renders per frame
+arm_soft_mesh_rgba_dirname: arm_soft_mesh_rgba  # subdir under each camera folder
+output_root: log/dataset
+overwrite_output: false
+policy_rollout_format: false
+save_hydra_config: null
+make_videos: null
+save_start_final_images: null
+timestamp_offset_s: 0.021
+save_final_state: false
+final_state_stabilization_steps: 30
+final_state_dir_name: final_state
+
+# Optional: additionally export replay rollouts in LeRobot dataset format.
+lerobot_export:
+  enabled: false
+  output_dir: null  # defaults to <output_root>/<timestamp>/lerobot_dataset
+  repo_id: null  # defaults to replay/<timestamp>
+  task_name: replay
+  use_videos: true
+  image_writer_processes: 0
+  image_writer_threads: 0
+  video_backend: null
+
+gt_dir: log/data/replay_recording_data  # there the replay traj is stored
+use_qpos: True  # whether to use qpos for replay
+start_idx: null
+init_from_trajectory: false
+init_frame_idx: null
+init_stabilization_steps: 30
+
+# Runtime perturbation (teleop-style incremental updates during replay)
+runtime_perturbation:
+  enabled: false
+  mode: fixed  # fixed | teleop_random
+  start_step: null  # if null, append after recorded frames
+  num_waypoints: 40  # used for fixed mode
+  translation_xy: [0.0, 0.0]
+  rotation_z: 0.0
+  gripper_state: 1.0  # policy space: 0 open, 1 close
+  random_steps: 100
+  translation_step_sizes: [0.005, 0.001]
+  rotation_step_deg: 2.0
+  rotation_prob: 0.5
+  seed: null
+  release:
+    enabled: false
+    num_waypoints: 10
+    gripper_open: 0.0
+
+# Perturbation parameters for trajectory generation and replay
+perturbation_x: null
+perturbation_y: null
+perturbation_z: null
+episode_id: 1
+num_interp_steps: 118
+num_approach_steps: 30
+num_grasp_steps: 100
+
+# Clip success evaluation
+clip_success_eval: false
+# Success mode:
+# - rope_routed: temporal routed criterion similar to calculate_success_rope.py
+# - points_in_groove: single-frame point-in-groove criterion
+clip_success_mode: rope_routed
+clip_success_min_points: 5
+clip_mesh_name: clip
+clip_mesh_path: null
+clip_pose: null
+groove_detection_mode: normal  # bbox or normal
+normal_up_axis: z
+normal_up_threshold: 0.9
+center_axis: x
+center_fraction: 0.5
+min_groove_points: 50
+groove_bounds_padding: 0.0
+length_margin_ratio: 0.1
+height_bottom_margin_ratio: 0.05
+height_top_margin_ratio: 0.05
+height_inner_percentile: 10
+height_inner_margin: 0.0
+height_min_override: null
+width_inner_percentile_left: 95
+width_inner_percentile_right: 5
+width_margin: 0.0
+
+# rope_routed mode thresholds (for spring-plane intersection counts)
+clip_success_plane_min_bottom: 100
+clip_success_plane_min_top: 100
+
+# Temporal evaluation window for rope_routed mode
+# If clip_success_tail_steps is null, use clip_success_tail_ratio * n_steps.
+clip_success_tail_steps: null
+clip_success_tail_ratio: 0.1111111111
+
+# Required routed frames in the evaluated tail window.
+# If clip_success_required_routed_steps is null, use ratio * tail_steps.
+clip_success_required_routed_steps: null
+clip_success_required_routed_ratio: 0.3
+
+# Cloth3 success evaluation (last-frame XY projection triangle likeness)
+cloth3_success_eval: false
+cloth3_success_mode: last_frame_triangle
+cloth3_success_save_debug_image: true
+cloth3_success_grid_size: 256
+cloth3_success_pad_ratio: 0.08
+cloth3_success_point_radius_px: 2
+cloth3_success_close_kernel: 5
+cloth3_success_open_kernel: 3
+cloth3_success_approx_eps_ratio: 0.03
+cloth3_success_iou_thresh: 0.72
+cloth3_success_cover_thresh: 0.80
+cloth3_success_vertices_min: 3
+cloth3_success_vertices_max: 4

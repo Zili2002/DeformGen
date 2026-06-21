@@ -1,0 +1,74 @@
+defaults:
+  - env: xarm_gripper
+  - gs: rope
+  - physics: default
+  - _self_
+
+hydra:
+  output_subdir: null
+  run:
+    dir: .
+
+seed: 0
+
+env_config: xarm_gripper
+gs_config: rope
+
+# Demo source
+demo:
+  gt_dir: log/policy_rollouts/rope_act_7000
+  episode_id: 0
+
+# Planar perturbation config (policy space: 0=open, 1=closed)
+perturbation:
+  mode: teleop_random  # fixed | teleop_random
+  random_steps: 100
+  translation_step_sizes: [0.005, 0.001]
+  rotation_step_deg: 2.0
+  rotation_prob: 0.5
+  translation_range_xy: [-10.0, 10.0]
+  rotation_range_z: [-15.0, 15.0]
+  num_waypoints: 40
+  gripper_state: 1.0
+  min_translation_norm: 0.1
+  min_rotation_abs: 10.0
+
+# Batch config
+batch:
+  num_samples: 10
+  seed: 42
+  parallel: false
+
+# Release (open gripper after perturbation)
+release:
+  enabled: true
+  num_waypoints: 10
+  gripper_open: 0.0
+
+# Replay initialization
+replay_init:
+  enabled: true
+  frame: index  # grasp | start | index
+  index: 100
+  stabilization_steps: 30
+  run_demo_tail: false
+
+# Output config
+output:
+  root_dir: log/augmented_dataset
+  overwrite: false
+  save_soft_body_state: true
+  save_robot_state: true
+  save_rgb_images: true
+  save_metadata: true
+  save_trajectory: true
+  replay_output_root: null
+  final_state_stabilization_steps: 30
+
+# Replay behavior
+replay_randomize: false
+
+# Optional fixed initial soft-body state for perturbation synthesis replay reset.
+# Path should point to a world-frame state.npy that can be loaded via
+# replay.py +deformed_state_path=...
+initial_deformed_state_path: null

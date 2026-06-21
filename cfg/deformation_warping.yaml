@@ -1,0 +1,33 @@
+defaults:
+  - replay
+  - _self_
+
+# Deformation warping settings
+use_deformation_warping: true
+deformation_path: log/experiments/interactive_exports/interactive_state_0000.npy
+
+# Warping parameters
+warp_decay: exponential  # none, linear, exponential
+decay_rate: 0.1
+k_neighbors: 5
+manip_k_neighbors: null
+use_local_rigid_baseline: false
+local_rigid_k: 5
+local_rigid_decay_mode: null
+local_rigid_decay_rate: null
+adapt_orientation: false
+grasp_row_only: false
+grasp_yaw_only: false
+grasp_pitch_only: false
+disable_z_warp: false
+grasp_warp_mode: knn
+use_grasp_local_warp: false
+grasp_local_radius: 0.1
+grasp_local_min_points: 50
+grasp_local_k: 0
+
+# Trajectory timing
+num_approach_steps: 60
+num_grasp_steps: 100
+num_rotate_steps: 30
+num_interp_steps: 118
