@@ -72,7 +72,7 @@ body {
   border-radius: 14px;
   border: 1px solid var(--dg-line);
   box-shadow: 0 18px 42px rgba(31, 35, 40, 0.08);
-  background: #fff;
+  background: transparent;
 }
 
 .teaser-img {
@@ -128,7 +128,7 @@ body {
 
 .abstract-section { background: #fff; }
 .method-section { background: var(--dg-warm); }
-.results-section { background: #fff; }
+.results-section { background: linear-gradient(180deg, #fff 0%, #fbfaf7 100%); }
 .citation-section { background: var(--dg-warm); }
 
 .method-stack {
@@ -144,7 +144,7 @@ body {
   gap: 1rem 1.25rem;
   border: 1px solid var(--dg-line);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.72);
   box-shadow: 0 16px 36px rgba(31, 35, 40, 0.06);
   padding: 1.3rem;
 }
