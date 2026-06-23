@@ -57,6 +57,10 @@ body {
 .author-block { display: inline-block; }
 .link-block a { margin: 0.25rem; }
 
+.publication-links {
+  transform: translateX(-1.1rem);
+}
+
 .overview-video-section { padding-top: 1rem; }
 .teaser .hero-body { padding-top: 0; }
 .teaser-caption {
@@ -239,6 +243,7 @@ pre {
 
 @media screen and (max-width: 768px) {
   .publication-title { font-size: 2.15rem !important; }
+  .publication-links { transform: none; }
   .video-placeholder { min-height: 260px; }
   .method-card-vertical { grid-template-columns: 1fr; }
   .method-number { grid-row: auto; }
