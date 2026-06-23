@@ -26,10 +26,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }} 
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
+          token: ${{ secrets.GH_PAT }} 
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
