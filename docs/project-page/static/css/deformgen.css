@@ -26,6 +26,31 @@ body {
   z-index: 30;
 }
 
+.navbar-brand {
+  position: relative;
+  z-index: 2;
+}
+
+.main-navbar-links {
+  justify-content: center;
+}
+
+@media screen and (min-width: 1024px) {
+  #main-navbar {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: auto;
+    transform: translateX(-50%);
+  }
+
+  #main-navbar .main-navbar-links {
+    flex-grow: 0;
+    margin: 0;
+  }
+}
+
 .navbar-item strong {
   font-family: "Google Sans", sans-serif;
   letter-spacing: -0.02em;
@@ -57,9 +82,6 @@ body {
 .author-block { display: inline-block; }
 .link-block a { margin: 0.25rem; }
 
-.publication-links {
-  transform: translateX(-1.1rem);
-}
 
 .overview-video-section { padding-top: 1rem; }
 .teaser .hero-body { padding-top: 0; }
@@ -243,7 +265,6 @@ pre {
 
 @media screen and (max-width: 768px) {
   .publication-title { font-size: 2.15rem !important; }
-  .publication-links { transform: none; }
   .video-placeholder { min-height: 260px; }
   .method-card-vertical { grid-template-columns: 1fr; }
   .method-number { grid-row: auto; }
