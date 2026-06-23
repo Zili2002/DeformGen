@@ -1,147 +1,284 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="DeformGen: dynamics-based topology augmentation for deformable manipulation policy learning.">
-  <title>DeformGen | Dynamics-Based Topology Augmentation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="keywords" content="DeformGen, deformable manipulation, robot learning, data augmentation, PhysTwin">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/deformgen.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="DeformGen home"><span class="brand-mark">D</span><span>DeformGen</span></a>
-    <nav aria-label="Primary navigation">
-      <a href="#overview">Overview</a>
-      <a href="#method">Method</a>
-      <a href="#results">Results</a>
-      <a href="#citation">Citation</a>
-    </nav>
-  </header>
 
-  <main id="top">
-    <section class="hero section-shell">
-      <div class="hero-copy reveal">
-        <p class="eyebrow">DEFORMABLE MANIPULATION / 2026</p>
-        <h1>Make deformation<br><em>trainable.</em></h1>
-        <p class="hero-lede">DeformGen synthesizes physically plausible deformable states and transfers demonstrations through a deformation field, turning one demonstration into diverse supervision for policy learning.</p>
-        <div class="actions" id="coming-soon">
-          <a class="button primary" href="#results">View results <span aria-hidden="true">↘</span></a>
-          <a class="button secondary" href="#citation">Paper <small>coming soon</small></a>
-          <a class="button secondary" href="#citation">Code <small>coming soon</small></a>
-        </div>
-      </div>
-      <div class="hero-figure reveal delay-1">
-        <object data="assets/teaser.pdf" type="application/pdf" aria-label="Overview of DeformGen">
-          <a href="assets/teaser.pdf">Open the DeformGen teaser figure.</a>
-        </object>
-        <p class="figure-note">From one source demonstration to topology-diverse, policy-ready trajectories.</p>
-      </div>
-    </section>
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#top"><strong>DeformGen</strong></a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="main-navbar">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div id="main-navbar" class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="#overview">Overview</a>
+      <a class="navbar-item" href="#method">Method</a>
+      <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#rollouts">Rollouts</a>
+      <a class="navbar-item" href="#citation">Citation</a>
+    </div>
+  </div>
+</nav>
 
-    <section class="authors section-shell reveal">
-      <p>
-        Zili Lin<sup>1,2</sup>, Wenyao Zhang<sup>1,2,3</sup>, Yuyang Zhang<sup>1,2</sup>, Zekun Qi<sup>4</sup>, Junyan Lin<sup>2,5</sup>, Hanxin Zhu<sup>6,7</sup>,<br>
-        Jiaolong Yang<sup>8</sup>, Zhibo Chen<sup>6,7</sup>, Yao Mu<sup>1</sup>, Xiaokang Yang<sup>1</sup>, Xin Jin<sup>2,7</sup>, Wenjun Zeng<sup>2</sup>
-      </p>
-      <p class="affiliations"><sup>1</sup>Shanghai Jiao Tong University &nbsp; <sup>2</sup>Eastern Institute of Technology &nbsp; <sup>3</sup>Tencent Robotics X &nbsp; <sup>4</sup>Tsinghua University<br><sup>5</sup>The Hong Kong Polytechnic University &nbsp; <sup>6</sup>University of Science and Technology of China &nbsp; <sup>7</sup>Zhongguancun Academy &nbsp; <sup>8</sup>Microsoft Research</p>
-    </section>
+<section id="top" class="hero publication-header">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation Policy Learning</h1>
 
-    <section id="overview" class="overview section-shell">
-      <div class="section-kicker"><span>01</span><span>Overview</span></div>
-      <div class="overview-grid">
-        <div class="video-placeholder reveal" role="img" aria-label="Introduction video placeholder">
-          <div class="video-grid" aria-hidden="true"></div>
-          <div class="video-content">
-            <span class="play-icon">▶</span>
-            <p>Introduction video</p>
-            <small>Coming soon</small>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Zili Lin<sup>1,2</sup>,</span>
+            <span class="author-block">Wenyao Zhang<sup>1,2,3</sup>,</span>
+            <span class="author-block">Yuyang Zhang<sup>1,2</sup>,</span>
+            <span class="author-block">Zekun Qi<sup>4</sup>,</span>
+            <span class="author-block">Junyan Lin<sup>2,5</sup>,</span>
+            <span class="author-block">Hanxin Zhu<sup>6,7</sup>,</span>
+            <span class="author-block">Jiaolong Yang<sup>8</sup>,</span>
+            <span class="author-block">Zhibo Chen<sup>6,7</sup>,</span>
+            <span class="author-block">Yao Mu<sup>1</sup>,</span>
+            <span class="author-block">Xiaokang Yang<sup>1</sup>,</span>
+            <span class="author-block">Xin Jin<sup>2,7</sup>,</span>
+            <span class="author-block">Wenjun Zeng<sup>2</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors affiliations">
+            <span class="author-block"><sup>1</sup>Shanghai Jiao Tong University</span>
+            <span class="author-block"><sup>2</sup>Eastern Institute of Technology</span>
+            <span class="author-block"><sup>3</sup>Tencent Robotics X</span>
+            <span class="author-block"><sup>4</sup>Tsinghua University</span>
+            <span class="author-block"><sup>5</sup>The Hong Kong Polytechnic University</span>
+            <span class="author-block"><sup>6</sup>University of Science and Technology of China</span>
+            <span class="author-block"><sup>7</sup>Zhongguancun Academy</span>
+            <span class="author-block"><sup>8</sup>Microsoft Research</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper Coming Soon</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/Zili2002/DeformGen" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#overview-video" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-youtube"></i></span>
+                  <span>Video Coming Soon</span>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
-        <div class="overview-copy reveal delay-1">
-          <h2>Rigid augmentation breaks when objects <em>change topology.</em></h2>
-          <p>Deformable objects inhabit a high-dimensional, physics-constrained state space. A simple pose offset cannot reach realistic configurations, and a rigid trajectory transform cannot follow material motion after deformation.</p>
-          <p>DeformGen addresses both sides of this problem: it first perturbs an object through localized dynamics and then warps the demonstration trajectory with a continuous deformation field.</p>
-          <div class="challenge-list">
-            <div><span>01</span><strong>Topology-coherent states</strong><p>Local physical disturbances are forward-simulated into plausible configurations.</p></div>
-            <div><span>02</span><strong>Geometry-aware actions</strong><p>Particle displacement fields adapt both grasp pose and manipulation path.</p></div>
-          </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <object class="pdf-figure teaser-pdf" data="./assets/teaser.pdf" type="application/pdf" aria-label="DeformGen teaser figure">
+        <a href="./assets/teaser.pdf">Open the DeformGen teaser figure.</a>
+      </object>
+      <h2 class="subtitle has-text-centered">
+        DeformGen turns one deformable-object demonstration into physically plausible states and executable warped trajectories.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<section id="overview" class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Overview Video</h2>
+        <div id="overview-video" class="video-placeholder">
+          <div class="play-button"><i class="fas fa-play"></i></div>
+          <p>Introduction video placeholder</p>
+          <span>Video link will be added after release.</span>
         </div>
       </div>
-    </section>
+    </div>
 
-    <section id="method" class="method section-shell">
-      <div class="section-kicker"><span>02</span><span>Method</span></div>
-      <div class="method-intro reveal">
-        <h2>A closed loop from physical state diversity to usable demonstrations.</h2>
-        <p>Each generated state remains tied to the source task through deformation-aware trajectory transfer and replay validation.</p>
+    <div class="columns is-centered has-text-centered overview-abstract">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Deformable manipulation policies often overfit to a small number of object states because collecting diverse demonstrations is expensive and rigid augmentation cannot capture topology-changing dynamics.
+            DeformGen addresses this by synthesizing topology-diverse deformable states through physics-based perturbation and by transferring the source demonstration with deformation-aware trajectory warping.
+          </p>
+          <p>
+            The resulting pipeline produces replay-validated trajectories, exports policy-ready LeRobot data, and supports training and evaluation across rope routing, toy packing, and cloth folding tasks.
+          </p>
+        </div>
       </div>
-      <ol class="pipeline reveal">
-        <li><span class="step-number">01</span><div><h3>Disturb</h3><p>Apply localized, controlled perturbations after grasp and forward-simulate the soft-body dynamics.</p></div></li>
-        <li><span class="step-number">02</span><div><h3>Stabilize</h3><p>Let the object settle into a physically plausible, topology-coherent target state.</p></div></li>
-        <li><span class="step-number">03</span><div><h3>Warp</h3><p>Lift particle displacements into a continuous field that transfers end-effector position and orientation.</p></div></li>
-        <li><span class="step-number">04</span><div><h3>Validate</h3><p>Replay, render, export LeRobot data, and retain successful trajectories as policy supervision.</p></div></li>
-      </ol>
-      <div class="method-figures">
-        <figure class="reveal"><object data="assets/state-augmentation.pdf" type="application/pdf"><a href="assets/state-augmentation.pdf">Open state augmentation figure.</a></object><figcaption>Dynamics-based state augmentation covers physically valid topology changes.</figcaption></figure>
-        <figure class="reveal delay-1"><object data="assets/trajectory-warping.pdf" type="application/pdf"><a href="assets/trajectory-warping.pdf">Open trajectory warping figure.</a></object><figcaption>Deformation-field warping transfers grasp and manipulation behavior to each new state.</figcaption></figure>
-      </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <section id="results" class="results section-shell">
-      <div class="section-kicker"><span>03</span><span>Results</span></div>
-      <div class="results-heading reveal">
-        <h2>One demonstration, stronger policies across three deformable tasks.</h2>
-        <p>Success rate (%) on held-out deformable-object states. DG denotes the full DeformGen pipeline.</p>
+<section id="method" class="section method-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Method</h2>
+        <p class="subtitle is-5">State perturbation and trajectory synthesis are coupled through simulation replay.</p>
       </div>
-      <div class="metric-row reveal">
-        <article><p>ACT</p><strong>59.00<span>%</span></strong><small>DG average success</small></article>
-        <article><p>Diffusion Policy</p><strong>37.33<span>%</span></strong><small>DG average success</small></article>
-        <article><p>SmolVLA</p><strong>56.50<span>%</span></strong><small>DG average success</small></article>
-        <article><p>&pi;<sub>0</sub></p><strong>56.67<span>%</span></strong><small>DG average success</small></article>
-      </div>
-      <div class="table-wrap reveal">
-        <table>
-          <thead><tr><th>Policy</th><th>1 Src.</th><th>SMG*</th><th>DG*</th><th class="dg-column">DG</th></tr></thead>
-          <tbody>
-            <tr><td>ACT</td><td>1.33</td><td>48.17</td><td>46.83</td><td class="dg-column"><strong>59.00</strong></td></tr>
-            <tr><td>Diffusion Policy</td><td>2.33</td><td>38.00</td><td><strong>41.00</strong></td><td class="dg-column">37.33</td></tr>
-            <tr><td>SmolVLA</td><td>2.50</td><td>40.33</td><td>55.00</td><td class="dg-column"><strong>56.50</strong></td></tr>
-            <tr><td>&pi;<sub>0</sub></td><td>2.33</td><td>27.83</td><td>51.67</td><td class="dg-column"><strong>56.67</strong></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="results-figure reveal"><object data="assets/qualitative-comparison.pdf" type="application/pdf"><a href="assets/qualitative-comparison.pdf">Open qualitative comparison figure.</a></object></div>
-      <p class="results-caption">Across rope routing, toy packing, and cloth folding, DeformGen generally improves policy generalization over source-only and rigid-style augmentation baselines.</p>
-    </section>
+    </div>
 
-    <section class="rollouts section-shell">
-      <div class="section-kicker"><span>04</span><span>Policy rollouts</span></div>
-      <div class="rollout-layout reveal">
-        <div><h2>Generated demonstrations are meant to be <em>executed.</em></h2><p>Policies trained on DeformGen data complete contact-rich tasks on held-out states that were not present in the source demonstration.</p></div>
-        <object data="assets/rollout-example.pdf" type="application/pdf"><a href="assets/rollout-example.pdf">Open rollout examples.</a></object>
+    <div class="columns is-centered method-cards">
+      <div class="column">
+        <div class="content method-card">
+          <h3 class="title is-4">1. Perturb and Stabilize</h3>
+          <p>After initializing a source demonstration frame, DeformGen applies local runtime perturbations and simulates the object until a stable, physically valid state is reached.</p>
+        </div>
       </div>
-    </section>
+      <div class="column">
+        <div class="content method-card">
+          <h3 class="title is-4">2. Warp and Replay</h3>
+          <p>Particle correspondences define a local deformation field that warps grasp poses and manipulation trajectories before replay validation.</p>
+        </div>
+      </div>
+    </div>
 
-    <section id="citation" class="citation section-shell">
-      <div class="section-kicker"><span>05</span><span>Citation</span></div>
-      <div class="citation-card reveal">
-        <div><h2>DeformGen</h2><p>Dynamics-Based Topology Augmentation for Deformable Manipulation Policy Learning.</p></div>
+    <div class="columns is-centered">
+      <div class="column">
+        <figure class="figure-card">
+          <object class="pdf-figure" data="./assets/state-augmentation.pdf" type="application/pdf">
+            <a href="./assets/state-augmentation.pdf">Open state augmentation figure.</a>
+          </object>
+          <figcaption>Dynamics-based state augmentation generates topology-diverse object states.</figcaption>
+        </figure>
+      </div>
+      <div class="column">
+        <figure class="figure-card">
+          <object class="pdf-figure" data="./assets/trajectory-warping.pdf" type="application/pdf">
+            <a href="./assets/trajectory-warping.pdf">Open trajectory warping figure.</a>
+          </object>
+          <figcaption>Trajectory warping adapts the source demonstration to each perturbed state.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="section results-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Results</h2>
+        <p class="subtitle is-5">Success rate (%) on held-out deformable-object states. DG denotes the full DeformGen pipeline.</p>
+      </div>
+    </div>
+
+    <div class="columns is-centered metric-row">
+      <div class="column"><div class="metric-card"><span>ACT</span><strong>59.00%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>Diffusion Policy</span><strong>37.33%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>SmolVLA</span><strong>56.50%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>&pi;<sub>0</sub></span><strong>56.67%</strong><p>DG average success</p></div></div>
+    </div>
+
+    <div class="table-container result-table">
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <tr><th>Policy</th><th>1 Source</th><th>SMG*</th><th>DG*</th><th>DG</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ACT</td><td>1.33</td><td>48.17</td><td>46.83</td><td><strong>59.00</strong></td></tr>
+          <tr><td>Diffusion Policy</td><td>2.33</td><td>38.00</td><td><strong>41.00</strong></td><td>37.33</td></tr>
+          <tr><td>SmolVLA</td><td>2.50</td><td>40.33</td><td>55.00</td><td><strong>56.50</strong></td></tr>
+          <tr><td>&pi;<sub>0</sub></td><td>2.33</td><td>27.83</td><td>51.67</td><td><strong>56.67</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="figure-card qualitative">
+      <object class="pdf-figure" data="./assets/qualitative-comparison.pdf" type="application/pdf">
+        <a href="./assets/qualitative-comparison.pdf">Open qualitative comparison figure.</a>
+      </object>
+      <figcaption>Qualitative comparison across rope routing, toy packing, and cloth folding.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="rollouts" class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Policy Rollouts</h2>
+        <p class="subtitle is-5">Generated supervision is validated through simulation replay before policy training.</p>
+      </div>
+    </div>
+    <figure class="figure-card">
+      <object class="pdf-figure rollout-pdf" data="./assets/rollout-example.pdf" type="application/pdf">
+        <a href="./assets/rollout-example.pdf">Open rollout examples.</a>
+      </object>
+      <figcaption>Example rollouts on held-out deformable states.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="citation" class="section citation-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 has-text-centered">Citation</h2>
         <pre><code>@article{lin2026deformgen,
-  title={DeformGen: Dynamics-Based Topology Augmentation
-         for Deformable Manipulation Policy Learning},
-  author={Lin, Zili and Zhang, Wenyao and others},
+  title={DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation Policy Learning},
+  author={Lin, Zili and Zhang, Wenyao and Zhang, Yuyang and Qi, Zekun and Lin, Junyan and Zhu, Hanxin and Yang, Jiaolong and Chen, Zhibo and Mu, Yao and Yang, Xiaokang and Jin, Xin and Zeng, Wenjun},
   year={2026}
 }</code></pre>
       </div>
-      <p class="acknowledgements">Built on the real2sim-eval / PhysTwin simulation stack. Policy training and evaluation are provided through the optional policy submodule.</p>
-    </section>
-  </main>
+    </div>
+  </div>
+</section>
 
-  <footer><span>DEFORMGEN</span><span>Dynamics-based augmentation for deformable manipulation.</span><a href="#top">Back to top ↑</a></footer>
-  <script src="app.js"></script>
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p><strong>DeformGen</strong> builds on real2sim-eval / PhysTwin simulation and an optional policy submodule.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var burgers = Array.prototype.slice.call(document.querySelectorAll(".navbar-burger"), 0);
+  burgers.forEach(function (burger) {
+    burger.addEventListener("click", function () {
+      var target = document.getElementById(burger.dataset.target);
+      burger.classList.toggle("is-active");
+      if (target) target.classList.toggle("is-active");
+    });
+  });
+});
+</script>
 </body>
 </html>
