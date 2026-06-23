@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import glob
 import json
 import pickle as pkl
 from pathlib import Path
@@ -18,7 +19,8 @@ from experiments.utils.calculate_success_cloth3 import evaluate_cloth3_last_fram
 def iter_runs(patterns: Iterable[str]) -> list[Path]:
     runs: list[Path] = []
     for pat in patterns:
-        runs.extend(sorted(Path().glob(pat)))
+        # pathlib.Path.glob does not support absolute patterns; glob.glob handles both.
+        runs.extend(Path(p) for p in sorted(glob.glob(pat)))
     uniq: list[Path] = []
     seen = set()
     for p in runs:

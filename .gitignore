@@ -227,3 +227,5 @@ slurm/
 pyrightconfig.json
 /log*
 /output*
+
+/docs/paper/

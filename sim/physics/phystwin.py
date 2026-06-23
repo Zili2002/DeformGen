@@ -260,8 +260,8 @@ class SpringMassDynamicsModule:
                 value = float(value)
             setattr(phystwin_cfg, key, value)
 
-        # Debug: 打印关键参数
-        print(f"[DEBUG] 弹簧构建参数:")
+        # Debug: Print key parameters.
+        print(f"[DEBUG] Spring construction parameters:")
         print(f"  object_radius: {phystwin_cfg.object_radius}")
         print(f"  object_max_neighbours: {phystwin_cfg.object_max_neighbours}")
 
@@ -300,40 +300,26 @@ class SpringMassDynamicsModule:
         collide_self_fric = checkpoint["collide_object_fric"]  # (1,)
         num_object_springs = checkpoint["num_object_springs"]  # (n_springs_object,)
 
-        # Debug: 打印弹簧数量信息
-        print(f"[DEBUG] init_pts 点数: {len(init_pts)}")
-        print(f"[DEBUG] object_pts 点数: {len(object_pts)}")
-        print(f"[DEBUG] init_springs 数量: {init_springs.shape[0]}")
-        print(f"[DEBUG] num_object_springs (期望): {num_object_springs}")
+        # Debug: Print spring count information.
+        print(f"[DEBUG] init_pts count: {len(init_pts)}")
+        print(f"[DEBUG] object_pts count: {len(object_pts)}")
+        print(f"[DEBUG] init_springs count: {init_springs.shape[0]}")
+        print(f"[DEBUG] num_object_springs (expected): {num_object_springs}")
 
-        # 允许少量差异（< 0.1%）由于浮点数精度或点云对齐的微小差异
+        # Allow a small difference (< 0.1%) from floating-point precision or minor point-cloud alignment variation.
         spring_diff = abs(init_springs.shape[0] - num_object_springs)
         spring_diff_percent = spring_diff / num_object_springs * 100
 
         if spring_diff > 0:
-            print(f"[WARNING] 弹簧数量差异: {spring_diff} ({spring_diff_percent:.4f}%)")
+            print(f"[WARNING] Spring count difference: {spring_diff} ({spring_diff_percent:.4f}%)")
 
-        if spring_diff_percent > 0.1:  # 差异超过 0.1% 时报错
+        if spring_diff_percent > 0.1:  # Reject differences above 0.1%.
             raise AssertionError(
-                f"弹簧数量差异过大: 实际 {init_springs.shape[0]} vs 期望 {num_object_springs} "
-                f"(差异 {spring_diff_percent:.4f}%)"
+                f"Spring count mismatch is too large: actual {init_springs.shape[0]} vs expected {num_object_springs} "
+                f"(difference {spring_diff_percent:.4f}%)"
             )
         elif spring_diff > 0:
-            print(f"[INFO] 使用实际构建的弹簧数量: {init_springs.shape[0]}")
-
-        # 调整 spring_Y 的长度以匹配实际弹簧数量
-        if init_springs.shape[0] < num_object_springs:
-            # 实际弹簧少于期望，截断 spring_Y
-            init_spring_Y = init_spring_Y[:init_springs.shape[0]]
-        elif init_springs.shape[0] > num_object_springs:
-            # 实际弹簧多于期望，用最后一个值填充
-            padding = init_spring_Y[num_object_springs-1:num_object_springs].repeat(
-                init_springs.shape[0] - num_object_springs
-            )
-            init_spring_Y = torch.cat([init_spring_Y[:num_object_springs], padding])
-        else:
-            # 数量完全匹配，截取 object springs 部分
-            init_spring_Y = init_spring_Y[:num_object_springs]
+            print(f"[INFO] Using actual constructed spring count: {init_springs.shape[0]}")
 
 
         collide_fric_override = None

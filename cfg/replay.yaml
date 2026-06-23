@@ -89,7 +89,7 @@ num_grasp_steps: 100
 # Clip success evaluation
 clip_success_eval: false
 # Success mode:
-# - rope_routed: temporal routed criterion similar to calculate_success_rope.py
+# - rope_routed: temporal routed criterion kept for backward-compatible replay configs
 # - points_in_groove: single-frame point-in-groove criterion
 clip_success_mode: rope_routed
 clip_success_min_points: 5

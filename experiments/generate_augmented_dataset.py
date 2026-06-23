@@ -109,6 +109,7 @@ def _run_replay(
         "use_qpos=false",
         f"randomize={'true' if bool(cfg.get('replay_randomize', False)) else 'false'}",
         "save_final_state=true",
+        f"make_videos={'true' if bool(cfg.get('make_videos', True)) else 'false'}",
         f"final_state_stabilization_steps={int(cfg.output.final_state_stabilization_steps)}",
         f"timestamp={run_name}",
         f"output_root={str(output_root)}",
@@ -164,7 +165,11 @@ def _run_replay(
         if replay_init.get("start_idx", None) is not None:
             cmd.append(f"start_idx={int(replay_init['start_idx'])}")
     print("Running replay:", " ".join(cmd))
-    subprocess.run(cmd, check=True, cwd=str(Path(__file__).parents[1]))
+    asset_root = cfg.get("asset_root", None)
+    replay_cwd = Path(asset_root).expanduser() if asset_root else Path(__file__).parents[1]
+    if not replay_cwd.is_dir():
+        raise FileNotFoundError(f"Replay asset root does not exist: {replay_cwd}")
+    subprocess.run(cmd, check=True, cwd=str(replay_cwd))
 
 
 def _copy_sample_outputs(

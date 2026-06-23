@@ -69,3 +69,11 @@ deformgen-perturb = "deformgen.cli.perturb_states:main"
 deformgen-warp = "deformgen.cli.warp_trajectory:main"
 deformgen-replay-export = "deformgen.cli.replay_export:main"
 deformgen-eval-success = "deformgen.cli.eval_success:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["deformgen*", "sim*", "experiments*"]
+exclude = ["cfg*", "assets*", "docs*", "examples*", "scripts*", "third-party*"]
