@@ -33,10 +33,10 @@ jobs:
         with:
           enablement: true
           token: ${{ secrets.GH_PAT }} 
-      - name: Upload static site
+      - name: Assemble static siten        run: |n          mkdir -p _siten          cp index.html _site/n          cp -a static _site/staticn      - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/project-page
+          path: _site
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
