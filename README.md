@@ -545,13 +545,6 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
-# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
-# templates use the older side/wrist image keys; map them here before training.
-features = cfg["policy"].get("input_features", {})
-if "observation.image.side" in features:
-    features["observation.images.front"] = features.pop("observation.image.side")
-if "observation.image.wrist" in features:
-    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "act_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
@@ -588,13 +581,6 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
-# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
-# templates use the older side/wrist image keys; map them here before training.
-features = cfg["policy"].get("input_features", {})
-if "observation.image.side" in features:
-    features["observation.images.front"] = features.pop("observation.image.side")
-if "observation.image.wrist" in features:
-    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "dp_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
@@ -635,13 +621,6 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
-# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
-# templates use the older side/wrist image keys; map them here before training.
-features = cfg["policy"].get("input_features", {})
-if "observation.image.side" in features:
-    features["observation.images.front"] = features.pop("observation.image.side")
-if "observation.image.wrist" in features:
-    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "svla_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
