@@ -757,6 +757,12 @@ deformgen-eval-success \
   --sloth-success-min-points 3050 \
   --sloth-obb-scale 1.05 \
   --out outputs/policy_eval/sloth_pi0_yawonly_test200/success_summary.csv
+
+deformgen-eval-success \
+  --case cloth3 \
+  --runs-glob "outputs/policy_eval/cloth3_svla_yawonly_test200/output_eval_policy/*" \
+  --final-state-dir-name final_state \
+  --out outputs/policy_eval/cloth3_svla_yawonly_test200/success_summary.csv
 ```
 
 ## 6. End-to-End Minimal Example
