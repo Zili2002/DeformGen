@@ -96,8 +96,8 @@ def _download_snapshot(
     force_download: bool = False,
 ) -> Path:
     """Download a fixed Hugging Face snapshot into the persistent asset cache."""
-    _, snapshot_download = _hf_import()
     _set_endpoint(endpoint)
+    _, snapshot_download = _hf_import()
     revision = _require_revision(source, source_name)
     return Path(
         _with_download_retries(
@@ -152,8 +152,8 @@ def _download_gs_archive(
     endpoint: str | None,
 ) -> Path:
     """Download and extract the upstream GS archive once per pinned revision."""
-    hf_hub_download, _ = _hf_import()
     _set_endpoint(endpoint)
+    hf_hub_download, _ = _hf_import()
     revision = _require_revision(source, source_name)
     archive_name = str(source["archive"])
     archive = Path(
@@ -307,6 +307,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     repo_root = args.repo_root.resolve()
     registry_path = args.sources or repo_root / "assets" / "sources.yaml"
+    _set_endpoint(getattr(args, "endpoint", None))
     registry = _load_registry(registry_path)
     entries: list[dict[str, Any]] = []
     try:
