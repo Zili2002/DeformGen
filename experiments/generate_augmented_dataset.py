@@ -98,6 +98,10 @@ def _run_replay(
     runtime_perturbation: Optional[Dict[str, Any]] = None,
     replay_init: Optional[Dict[str, Any]] = None,
 ) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    replay_script = repo_root / "experiments" / "replay.py"
+    if not replay_script.is_file():
+        raise FileNotFoundError(f"DeformGen replay entry point not found: {replay_script}")
     cmd = [
         sys.executable,
         "experiments/replay.py",
@@ -165,11 +169,7 @@ def _run_replay(
         if replay_init.get("start_idx", None) is not None:
             cmd.append(f"start_idx={int(replay_init['start_idx'])}")
     print("Running replay:", " ".join(cmd))
-    asset_root = cfg.get("asset_root", None)
-    replay_cwd = Path(asset_root).expanduser() if asset_root else Path(__file__).parents[1]
-    if not replay_cwd.is_dir():
-        raise FileNotFoundError(f"Replay asset root does not exist: {replay_cwd}")
-    subprocess.run(cmd, check=True, cwd=str(replay_cwd))
+    subprocess.run(cmd, check=True, cwd=str(repo_root))
 
 
 def _copy_sample_outputs(
@@ -281,6 +281,11 @@ def main(cfg) -> None:
         "grasp_timestep": int(t_grasp),
         "num_samples": int(cfg.batch.num_samples),
         "mode": mode,
+        "seed_policy": {
+            "batch_seed": int(cfg.batch.seed),
+            "reset_seed": int(cfg.reset_seed) if cfg.get("reset_seed", None) is not None else None,
+            "sample_seed_rule": "batch_seed + sample_index",
+        },
         "replay_init": {
             "enabled": replay_init_enabled,
             "frame": str(cfg.replay_init.frame),
@@ -375,6 +380,7 @@ def main(cfg) -> None:
             "translation_xy": perturb["translation_xy"].tolist() if "translation_xy" in perturb else None,
             "rotation_z": float(perturb["rotation_z"]) if "rotation_z" in perturb else None,
             "seed": int(perturb["seed"]) if "seed" in perturb else None,
+            "reset_seed": int(cfg.reset_seed) if cfg.get("reset_seed", None) is not None else None,
             "release": {
                 "enabled": release_enabled,
                 "num_waypoints": int(cfg.release.num_waypoints),

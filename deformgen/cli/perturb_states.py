@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -70,17 +69,20 @@ def _format_hydra_value(value: Any) -> str:
 
 
 def _resolve_asset_root(args: argparse.Namespace, repo_root: Path) -> Path:
-    """Resolve the directory that contains runtime log assets and checkpoints."""
-    raw_root = args.asset_root or os.environ.get("DEFORMGEN_ASSET_ROOT")
-    asset_root = Path(raw_root).expanduser().resolve() if raw_root else repo_root
-    if not asset_root.is_dir():
-        raise FileNotFoundError(f"Asset root does not exist: {asset_root}")
-    if not (asset_root / "log").is_dir():
-        raise FileNotFoundError(
-            f"Asset root has no log directory: {asset_root}. "
-            "Provide --asset-root or set DEFORMGEN_ASSET_ROOT."
+    """Return the internal DeformGen asset root.
+
+    External asset roots are deprecated because runtime code and relative assets
+    must resolve from the same repository root.
+    """
+    if args.asset_root is not None:
+        print(
+            "deformgen-perturb: --asset-root is deprecated and ignored; "
+            "runtime assets are loaded from DeformGen/log.",
+            file=sys.stderr,
         )
-    return asset_root
+    if not (repo_root / "log").is_dir():
+        raise FileNotFoundError(f"Missing internal runtime assets: {repo_root / 'log'}")
+    return repo_root
 
 
 def _load_case_profile(repo_root: Path, case: str) -> dict[str, Any]:
@@ -113,12 +115,21 @@ def _resolve_demo_path(
 
 def _runtime_profile_values(args: argparse.Namespace, repo_root: Path) -> dict[str, Any]:
     """Resolve case defaults, then apply typed CLI overrides."""
+    cfg = OmegaConf.load(repo_root / "cfg" / "augmentation.yaml")
     profile = _load_case_profile(repo_root, args.case)
     perturbation = profile["perturbation"]
     release = profile["release"]
     replay_init = profile["replay_init"]
     output = profile["output"]
+    seed = profile["seed"]
+    batch_seed = (
+        int(args.seed)
+        if args.seed is not None
+        else int(seed["base"]) + int(args.seed_shard_index) * int(seed["stride"])
+    )
     return {
+        "batch_seed": batch_seed,
+        "reset_seed": int(args.reset_seed) if args.reset_seed is not None else seed["reset"],
         "random_steps": int(args.random_steps or perturbation["random_steps"]),
         "translation_step_sizes": (
             _csv_float_list(args.translation_step_sizes, "--translation-step-sizes")
@@ -164,6 +175,11 @@ def _runtime_profile_values(args: argparse.Namespace, repo_root: Path) -> dict[s
             args.stabilization_steps
             if args.stabilization_steps is not None
             else output["final_state_stabilization_steps"]
+        ),
+        "replay_randomize": (
+            bool(profile.get("replay_randomize", cfg.replay_randomize))
+            if args.randomize is None
+            else bool(args.randomize)
         ),
         "make_videos": True if args.make_videos is None else bool(args.make_videos),
     }
@@ -274,8 +290,16 @@ def build_runtime_command(args: argparse.Namespace) -> list[str]:
     runtime = _runtime_profile_values(args, repo_root)
 
     gs, ckpt_path, case_name = _CASE_DEFAULTS[args.case]
-    trans = _csv_floats(args.translation_range_xy, 2, "--translation-range-xy")
-    rot = _csv_floats(args.rotation_range_z, 2, "--rotation-range-z")
+    trans = (
+        _csv_floats(args.translation_range_xy, 2, "--translation-range-xy")
+        if args.translation_range_xy is not None
+        else None
+    )
+    rot = (
+        _csv_floats(args.rotation_range_z, 2, "--rotation-range-z")
+        if args.rotation_range_z is not None
+        else None
+    )
     num_states = 1 if args.num_states is None else args.num_states
     overrides = [
         f"gs={gs}",
@@ -287,16 +311,14 @@ def build_runtime_command(args: argparse.Namespace) -> list[str]:
         f"output.root_dir={Path(args.out)}",
         f"output.overwrite={'true' if args.overwrite else 'false'}",
         f"batch.num_samples={int(num_states)}",
-        f"batch.seed={int(args.seed)}",
+        f"batch.seed={runtime['batch_seed']}",
         f"perturbation.mode={_RUNTIME_MODE_TO_BACKEND[args.mode]}",
         f"perturbation.random_steps={runtime['random_steps']}",
         f"perturbation.translation_step_sizes={_format_hydra_value(runtime['translation_step_sizes'])}",
         f"perturbation.rotation_step_deg={runtime['rotation_step_deg']}",
         f"perturbation.rotation_prob={runtime['rotation_prob']}",
         f"perturbation.gripper_state={runtime['gripper_state']}",
-        f"perturbation.translation_range_xy={_format_hydra_value(trans)}",
-        f"perturbation.rotation_range_z={_format_hydra_value(rot)}",
-        f"replay_randomize={'true' if args.randomize else 'false'}",
+        f"replay_randomize={'true' if runtime['replay_randomize'] else 'false'}",
         f"release.enabled={'true' if runtime['release_enabled'] else 'false'}",
         f"release.num_waypoints={runtime['release_waypoints']}",
         f"release.gripper_open={runtime['release_gripper_open']}",
@@ -307,8 +329,15 @@ def build_runtime_command(args: argparse.Namespace) -> list[str]:
         f"replay_init.run_demo_tail={'true' if runtime['run_demo_tail'] else 'false'}",
         f"output.final_state_stabilization_steps={runtime['final_stabilization_steps']}",
         f"make_videos={'true' if runtime['make_videos'] else 'false'}",
-        f"+asset_root={asset_root}",
     ]
+    if trans is not None:
+        overrides.append(f"perturbation.translation_range_xy={_format_hydra_value(trans)}")
+    if rot is not None:
+        overrides.append(f"perturbation.rotation_range_z={_format_hydra_value(rot)}")
+    if runtime["reset_seed"] is None:
+        overrides.append("reset_seed=null")
+    else:
+        overrides.append(f"reset_seed={int(runtime['reset_seed'])}")
     if args.collide_fric_override is not None:
         overrides.append(f"physics.collide_fric_override={float(args.collide_fric_override)}")
     overrides.extend(args.override)
@@ -489,7 +518,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--asset-root",
         default=None,
-        help="Directory containing log/ assets and PhysTwin checkpoints; defaults to DEFORMGEN_ASSET_ROOT or repo root.",
+        help="Deprecated compatibility option; runtime assets are loaded from this repository's log/ directory.",
     )
     parser.add_argument("--demo", default=None, help="Source demonstration; defaults to the case profile under --asset-root.")
     parser.add_argument("--episode-id", type=int, default=None, help="Episode id; defaults to the case profile.")
@@ -504,9 +533,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             "configured-grid, uniform-grid. Legacy aliases remain accepted."
         ),
     )
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--translation-range-xy", default="-0.05,0.05", help="Continuous runtime-fixed min,max XY range in meters.")
-    parser.add_argument("--rotation-range-z", default="-15,15", help="Continuous runtime-fixed min,max yaw range in degrees.")
+    parser.add_argument("--seed", type=int, default=None, help="Override the case profile batch seed.")
+    parser.add_argument("--seed-shard-index", type=int, default=0, help="Profile seed-stride index; cloth3 uses a stride of 1000.")
+    parser.add_argument("--reset-seed", type=int, default=None, help="Override the case profile simulator reset seed.")
+    parser.add_argument(
+        "--translation-range-xy",
+        default=None,
+        help="Override continuous runtime-fixed min,max XY range in meters; defaults to cfg/augmentation.yaml.",
+    )
+    parser.add_argument(
+        "--rotation-range-z",
+        default=None,
+        help="Override continuous runtime-fixed min,max yaw range in degrees; defaults to cfg/augmentation.yaml.",
+    )
     parser.add_argument("--grid-start", type=int, default=0, help="First deterministic grid index to synthesize.")
     parser.add_argument("--grid-nx", type=int, default=3, help="uniform-grid X samples.")
     parser.add_argument("--grid-ny", type=int, default=3, help="uniform-grid Y samples.")
@@ -530,7 +569,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Static source-pose frames replayed before saving a default-state/grid state.",
     )
     parser.add_argument("--collide-fric-override", type=float, default=None)
-    parser.add_argument("--randomize", action="store_true", help="Enable non-grid reset randomization for runtime perturbation replay.")
+    parser.add_argument(
+        "--randomize",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Override non-grid reset randomization for runtime perturbation replay; defaults to cfg/augmentation.yaml.",
+    )
     parser.add_argument("--release", action=argparse.BooleanOptionalAction, default=None, help="Override whether to open the gripper after runtime perturbation.")
     parser.add_argument("--release-waypoints", type=int, default=None, help="Override release interpolation frames.")
     parser.add_argument("--release-gripper-open", type=float, default=None, help="Override the release gripper command.")
@@ -564,7 +608,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 0
             return subprocess.call(
                 command,
-                cwd=_resolve_asset_root(args, Path(__file__).resolve().parents[2]),
+                cwd=Path(__file__).resolve().parents[2],
             )
         return _run_state_synthesis(args)
     except Exception as exc:

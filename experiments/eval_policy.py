@@ -50,8 +50,14 @@ def _load_deformed_state_paths(cfg):
     deformed_state_path = cfg.get("deformed_state_path", None)
 
     if deformed_states_file is not None:
-        with open(Path(deformed_states_file), "r") as f:
-            deformed_state_paths = [line.strip() for line in f if line.strip()]
+        state_list_path = Path(deformed_states_file)
+        with state_list_path.open("r") as f:
+            entries = [line.strip() for line in f if line.strip()]
+        # Released test lists are portable: resolve relative entries beside the list.
+        deformed_state_paths = [
+            str(path if path.is_absolute() else state_list_path.parent / path)
+            for path in (Path(entry) for entry in entries)
+        ]
     elif deformed_states_dir is not None:
         deformed_state_paths = [str(p) for p in sorted(Path(deformed_states_dir).glob(deformed_states_pattern))]
     elif deformed_state_path is not None:

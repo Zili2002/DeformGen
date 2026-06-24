@@ -1,0 +1,40 @@
+version: 1
+
+# Every revision must be an immutable Hugging Face commit SHA or release tag.
+# The Cloth3 revision is updated after the release upload that includes demos.
+sources:
+  upstream_gs_scans:
+    repo_id: shashuo0104/gs-scans
+    repo_type: model
+    revision: cf85a25d8ed72cafeb290ef67cae8c44fcd90782
+    archive: gs_scans.zip
+  upstream_phystwin_rope:
+    repo_id: shashuo0104/phystwin-rope
+    repo_type: model
+    revision: 1da9f916df2074b0cd8c61899af22b1df86ed499
+  upstream_phystwin_sloth:
+    repo_id: shashuo0104/phystwin-toy
+    repo_type: model
+    revision: b0e359b3bfc7f21047a0533454b04d9a705ab99f
+  deformgen_simassets:
+    repo_id: Zili2002/DeformGen-SimAssets
+    repo_type: dataset
+    revision: 0a799a2cac95520a1a6b0b0bbded96b18e44173c
+
+cases:
+  rope:
+    gs_dirs: [scene_gripper, rope, clip]
+    physics_source: upstream_phystwin_rope
+    demo_relpath: demos/log/policy_rollouts/rope_act_7000
+    demo_target: log/policy_rollouts/rope_act_7000
+  sloth:
+    gs_dirs: [scene_gripper, sloth, box]
+    physics_source: upstream_phystwin_sloth
+    demo_relpath: demos/log/dataset/teleop_replay_005_sloth_grasp_shift_s5a3f2_segmentxy_keepoffset
+    demo_target: log/dataset/teleop_replay_005_sloth_grasp_shift_s5a3f2_segmentxy_keepoffset
+  cloth3:
+    gs_dirs: [scene_gripper, cloth3]
+    physics_source: deformgen_simassets
+    physics_relpath: cloth3/log/phystwin/cloth3
+    demo_relpath: demos/log/dataset/teleop_run_007_clean_noleading_interp80_trim_norelease
+    demo_target: log/dataset/teleop_run_007_clean_noleading_interp80_trim_norelease

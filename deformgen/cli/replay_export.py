@@ -169,7 +169,7 @@ def build_replay_command(
     if state_path is not None:
         if not state_path.exists():
             raise FileNotFoundError(f"State path does not exist: {state_path}")
-        overrides.append(f"deformed_state_path={_quote_override_value(str(state_path))}")
+        overrides.append(f"+deformed_state_path={_quote_override_value(str(state_path))}")
     if args.export_lerobot:
         overrides.extend(
             [

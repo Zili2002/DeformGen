@@ -22,6 +22,7 @@ dependencies = [
   "ninja",
   "networkx==3.5",
   "hydra-core",
+  "huggingface_hub>=0.32.0",
   "warp-lang==1.7.0",
   "kornia",
   "opencv-python",
@@ -69,6 +70,7 @@ deformgen-perturb = "deformgen.cli.perturb_states:main"
 deformgen-warp = "deformgen.cli.warp_trajectory:main"
 deformgen-replay-export = "deformgen.cli.replay_export:main"
 deformgen-eval-success = "deformgen.cli.eval_success:main"
+deformgen-fetch = "deformgen.cli.fetch_assets:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
