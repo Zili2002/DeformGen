@@ -80,6 +80,13 @@ body {
 }
 
 .author-block { display: inline-block; }
+
+.corresponding-note {
+  color: var(--dg-muted);
+  font-family: "Google Sans", sans-serif;
+  margin-top: 0.35rem;
+}
+
 .link-block a { margin: 0.25rem; }
 
 
