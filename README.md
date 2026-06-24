@@ -28,7 +28,7 @@ DeformGen/
 ├── experiments/            # real2sim-eval-compatible backends
 ├── policy/                 # Optional policy-training submodule
 ├── scripts/                # Example launch scripts and policy helpers
-├── sim/                    # PhysTwin / simulator code
+├── sim/                    # Simulator code
 ├── log/                    # Local assets or symlinks to released assets
 └── outputs/                # Generated outputs, replay runs, and local checks
 ```
@@ -36,7 +36,7 @@ DeformGen/
 ## Installation
 
 ```bash
-git clone <your-deformgen-repo-url> DeformGen
+git clone https://github.com/Zili2002/DeformGen.git DeformGen
 cd DeformGen
 
 uv venv --python=3.11
@@ -209,9 +209,6 @@ Useful overrides:
 ```bash
 # Change batch seed while keeping the case default perturbation profile.
 --seed 42
-
-# Override friction when needed, e.g. sloth experiments.
---collide-fric-override 0.3
 
 # Disable videos for large-scale generation.
 --no-make-videos
@@ -648,8 +645,6 @@ The released datasets store pi0 norm stats with the standard name:
 $TRAIN_ROOT/meta/norm_stats.json
 ```
 
-The file is computed with the max10000 setting. Older max10000/max200000-specific filenames are not part of the public training-set interface.
-
 Example for rope yawonly:
 
 ```bash
@@ -829,9 +824,7 @@ deformgen-eval-success \
 - Keep the engineering directory names `yawonly`, `txy`, and `gridrigid`; map them to `DG`, `DG*`, and `SMG*` only in presentation text.
 - For warped JSON trajectories, use `--no-use-qpos` in replay.
 - For long batch replay jobs, use `--resume --skip-existing --continue-on-error`.
-- For sloth evaluation, use the same object-ground friction used to generate the replay data, commonly `physics.collide_fric_override=0.3`.
 - For pi0, always use the norm stats from the exact training dataset. A wrong global `norm_stats.json` can produce invalid evaluation results.
-- Large generated outputs should stay outside git. Store them under `outputs/`, `release/`, or a project-specific data root.
 
 ## Documentation
 
