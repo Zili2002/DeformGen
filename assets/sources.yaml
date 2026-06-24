@@ -1,25 +1,21 @@
 version: 1
 
-# Every revision must be an immutable Hugging Face commit SHA or release tag.
-# The Cloth3 revision is updated after the release upload that includes demos.
+# Sources follow the upstream repository default branch. The local manifest records
+# the requested revision as "default"; users should retain it with experiment outputs.
 sources:
   upstream_gs_scans:
     repo_id: shashuo0104/gs-scans
     repo_type: model
-    revision: cf85a25d8ed72cafeb290ef67cae8c44fcd90782
     archive: gs_scans.zip
   upstream_phystwin_rope:
     repo_id: shashuo0104/phystwin-rope
     repo_type: model
-    revision: 1da9f916df2074b0cd8c61899af22b1df86ed499
   upstream_phystwin_sloth:
     repo_id: shashuo0104/phystwin-toy
     repo_type: model
-    revision: b0e359b3bfc7f21047a0533454b04d9a705ab99f
   deformgen_simassets:
     repo_id: Zili2002/DeformGen-SimAssets
     repo_type: dataset
-    revision: 0a799a2cac95520a1a6b0b0bbded96b18e44173c
 
 cases:
   rope:

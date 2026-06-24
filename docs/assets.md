@@ -6,7 +6,7 @@ DeformGen separates code from large simulation assets. Install the released asse
 deformgen-fetch sim-assets --case all --repo-root /path/to/DeformGen
 ```
 
-The command downloads immutable revisions defined in [`assets/sources.yaml`](../assets/sources.yaml), caches the downloaded files under `~/.cache/deformgen`, and creates local links under `log/`. It writes the resolved source revisions and link targets to `log/external_assets/resolved_manifest.json`.
+The command downloads the upstream default branch unless a source declares an explicit `revision` in [`assets/sources.yaml`](../assets/sources.yaml), caches the downloaded files under `~/.cache/deformgen`, and creates local links under `log/`. It writes the requested source revision (`default` when unpinned) and link targets to `log/external_assets/resolved_manifest.json`.
 
 The source registry uses:
 

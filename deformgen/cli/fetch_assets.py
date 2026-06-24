@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch immutable simulation assets and install local DeformGen symlinks."""
+"""Fetch simulation assets and install local DeformGen symlinks."""
 
 from __future__ import annotations
 
@@ -38,15 +38,27 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _require_revision(source: dict[str, Any], source_name: str) -> str:
-    """Require a fixed source revision rather than silently using main."""
+def _requested_revision(source: dict[str, Any], source_name: str) -> str | None:
+    """Return an optional source revision; None follows the Hub default branch."""
     revision = source.get("revision")
+    if revision is None:
+        return None
     if not isinstance(revision, str) or not revision or revision.startswith("PENDING_"):
         raise ValueError(
-            f"Source {source_name} has no immutable revision. Update assets/sources.yaml "
-            "with a Hugging Face commit SHA or immutable tag before downloading."
+            f"Source {source_name} has an invalid revision in assets/sources.yaml. "
+            "Use a non-empty Hugging Face revision or omit the field."
         )
     return revision
+
+
+def _revision_label(revision: str | None) -> str:
+    """Return a human-readable label for an optional Hub revision."""
+    return revision or "default"
+
+
+def _revision_kwargs(revision: str | None) -> dict[str, str]:
+    """Build Hub keyword arguments without forcing a mutable branch name."""
+    return {} if revision is None else {"revision": revision}
 
 
 def _hf_import() -> tuple[Any, Any]:
@@ -95,21 +107,21 @@ def _download_snapshot(
     allow_patterns: list[str] | None = None,
     force_download: bool = False,
 ) -> Path:
-    """Download a fixed Hugging Face snapshot into the persistent asset cache."""
+    """Download a Hugging Face snapshot into the persistent asset cache."""
     _set_endpoint(endpoint)
     _, snapshot_download = _hf_import()
-    revision = _require_revision(source, source_name)
+    revision = _requested_revision(source, source_name)
     return Path(
         _with_download_retries(
             lambda: snapshot_download(
                 repo_id=str(source["repo_id"]),
                 repo_type=str(source["repo_type"]),
-                revision=revision,
+                **_revision_kwargs(revision),
                 cache_dir=str(cache_root / "huggingface"),
                 allow_patterns=allow_patterns,
                 force_download=force_download,
             ),
-            f"{source_name}@{revision}",
+            f"{source_name}@{_revision_label(revision)}",
         )
     )
 
@@ -151,10 +163,10 @@ def _download_gs_archive(
     cache_root: Path,
     endpoint: str | None,
 ) -> Path:
-    """Download and extract the upstream GS archive once per pinned revision."""
+    """Download and extract the upstream GS archive once per resolved content hash."""
     _set_endpoint(endpoint)
     hf_hub_download, _ = _hf_import()
-    revision = _require_revision(source, source_name)
+    revision = _requested_revision(source, source_name)
     archive_name = str(source["archive"])
     archive = Path(
         _with_download_retries(
@@ -162,13 +174,15 @@ def _download_gs_archive(
                 repo_id=str(source["repo_id"]),
                 repo_type=str(source["repo_type"]),
                 filename=archive_name,
-                revision=revision,
+                **_revision_kwargs(revision),
                 cache_dir=str(cache_root / "huggingface"),
             ),
-            f"{source_name}/{archive_name}@{revision}",
+            f"{source_name}/{archive_name}@{_revision_label(revision)}",
         )
     )
-    destination = cache_root / "sim-assets" / source_name / revision / "extracted"
+    archive_sha256 = _sha256(archive)
+    cache_version = revision or f"default-{archive_sha256[:16]}"
+    destination = cache_root / "sim-assets" / source_name / cache_version / "extracted"
     marker = destination / ".deformgen_extract_complete.json"
     if marker.exists():
         return destination
@@ -181,7 +195,15 @@ def _download_gs_archive(
             shutil.rmtree(destination)
         shutil.move(str(temporary), str(destination))
     marker.write_text(
-        json.dumps({"archive": str(archive), "sha256": _sha256(archive)}, indent=2) + "\n"
+        json.dumps(
+            {
+                "archive": str(archive),
+                "sha256": archive_sha256,
+                "requested_revision": _revision_label(revision),
+            },
+            indent=2,
+        )
+        + "\n"
     )
     return destination
 
@@ -293,7 +315,7 @@ def _iter_cases(requested: str) -> Iterable[str]:
 
 def main(argv: Sequence[str] | None = None) -> int:
     """Fetch released simulation assets and link them into a DeformGen checkout."""
-    parser = argparse.ArgumentParser(description="Fetch pinned DeformGen simulation assets.")
+    parser = argparse.ArgumentParser(description="Fetch DeformGen simulation assets.")
     subparsers = parser.add_subparsers(dest="command", required=True)
     assets_parser = subparsers.add_parser("sim-assets", help="Install GS, PhysTwin, and demo assets.")
     assets_parser.add_argument("--case", choices=["rope", "sloth", "cloth3", "all"], default="all")
@@ -319,10 +341,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                     names.insert(0, "upstream_gs_scans")
                 for source_name in dict.fromkeys(names):
                     source = registry["sources"][source_name]
-                    revision = _require_revision(source, source_name)
+                    revision = _requested_revision(source, source_name)
                     print(
                         f"PLAN source={source_name} repo={source['repo_id']} "
-                        f"revision={revision} case={case}"
+                        f"revision={_revision_label(revision)} case={case}"
                     )
             return 0
         for case in _iter_cases(args.case):
@@ -332,6 +354,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "case": case,
                     "source": metadata["source"],
                     "source_path": str(source),
+                    "requested_revision": _revision_label(
+                        _requested_revision(registry["sources"][metadata["source"]], metadata["source"])
+                    ),
                     "target": str(target),
                 }
                 row["status"] = _install_link(source, target, args.force)

@@ -117,7 +117,7 @@ deformgen-fetch sim-assets \
 # deformgen-fetch sim-assets --case all --repo-root "$DEFORMGEN_ROOT" --endpoint https://hf-mirror.com
 ```
 
-The immutable source revisions are recorded in [`assets/sources.yaml`](assets/sources.yaml). The installer refuses to run if a source revision is not pinned; it never falls back to a mutable `main` branch.
+Asset sources are recorded in [`assets/sources.yaml`](assets/sources.yaml). Sources intentionally follow each upstream repository's default branch unless a `revision` is explicitly provided. The generated `log/external_assets/resolved_manifest.json` records the requested source revision (`default` when unpinned) and local link targets for each installation.
 
 For local development, symlinks are acceptable and were used to validate the release layout:
 
