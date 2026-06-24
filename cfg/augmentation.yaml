@@ -151,6 +151,12 @@ case_defaults:
 state_synthesis:
   final_state_stabilization_steps: 30
 
+# Runtime perturbation first writes a raw final state, then replays the final
+# robot command from that state and saves a separate stable30 artifact.
+post_runtime_stabilization:
+  final_state_stabilization_steps: 30
+  state_hold_frames: 2
+
 # Original full pipeline exports replay videos by default.
 make_videos: true
 

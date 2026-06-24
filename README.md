@@ -154,7 +154,7 @@ python -m deformgen.cli.fetch_assets --help
 
 ### Runtime-Random Perturbation
 
-Runtime-random perturbation follows a demonstration, closes the gripper at the configured frame, applies runtime perturbations, optionally releases the gripper, stabilizes the state, and writes `episode_0000/final_state/state.npy`.
+Runtime-random perturbation follows a demonstration, closes the gripper at the configured frame, applies runtime perturbations, optionally releases the gripper, and saves its raw result. It then runs an independent 30-step stabilization replay from that raw state, holding the final robot command, and writes `final_state_stable/state.npy`. Use this stable artifact for trajectory warping.
 
 Formal defaults are stored in `cfg/augmentation.yaml` under `case_defaults`. They align with the original three-case perturbation plan:
 
@@ -195,7 +195,8 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
 Important outputs:
 
 ```text
-outputs/perturb/<run>/demo_episode_XXXX/sample_0000/episode_0000/final_state/state.npy
+outputs/perturb/<run>/demo_episode_XXXX/sample_0000/soft_body_state.npy
+outputs/perturb/<run>/demo_episode_XXXX/sample_0000/final_state_stable/state.npy
 outputs/perturb/<run>/demo_episode_XXXX/sample_0000/metadata.json
 outputs/perturb/<run>/demo_episode_XXXX/summary.json
 ```
@@ -278,7 +279,7 @@ Formal yawonly / DG parameters used by the released three-case data:
 
 ```bash
 CASE=rope
-STATE=outputs/perturb/rope_runtime_random/demo_episode_0001/sample_0000/episode_0000/final_state/state.npy
+STATE=outputs/perturb/rope_runtime_random/demo_episode_0001/sample_0000/final_state_stable/state.npy
 DEMO=log/policy_rollouts/rope_act_7000
 EPISODE_ID=1
 OUT=outputs/warp/rope_yawonly_item000000
@@ -351,7 +352,7 @@ outputs/warp/rope_gridrigid_yawonly/warp_manifest.jsonl
 ### Rope Replay + LeRobot + Online Rope Success
 
 ```bash
-STATE=outputs/perturb/rope_runtime_random/demo_episode_0001/sample_0000/episode_0000/final_state/state.npy
+STATE=outputs/perturb/rope_runtime_random/demo_episode_0001/sample_0000/final_state_stable/state.npy
 GT=outputs/warp/rope_yawonly_item000000/episode_0001
 ROOT=outputs/replay/rope_yawonly_item000000
 
@@ -382,7 +383,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-replay-export \
 ### Sloth Replay + LeRobot + Last-Frame Packed Success
 
 ```bash
-STATE=outputs/perturb/sloth_runtime_random/demo_episode_0000/sample_0000/episode_0000/final_state/state.npy
+STATE=outputs/perturb/sloth_runtime_random/demo_episode_0000/sample_0000/final_state_stable/state.npy
 GT=outputs/warp/sloth_yawonly_item000000/episode_0000
 ROOT=outputs/replay/sloth_yawonly_item000000
 
@@ -413,7 +414,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-replay-export \
 ### Cloth3 Replay + LeRobot + Last-Frame Triangle Success
 
 ```bash
-STATE=outputs/perturb/cloth3_runtime_random/demo_episode_0000/sample_0000/episode_0000/final_state/state.npy
+STATE=outputs/perturb/cloth3_runtime_random/demo_episode_0000/sample_0000/final_state_stable/state.npy
 GT=outputs/warp/cloth3_yawonly_item000000/episode_0000
 ROOT=outputs/replay/cloth3_yawonly_item000000
 
@@ -770,7 +771,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
   --out outputs/e2e/rope_state \
   --overwrite
 
-STATE=outputs/e2e/rope_state/demo_episode_0001/sample_0000/episode_0000/final_state/state.npy
+STATE=outputs/e2e/rope_state/demo_episode_0001/sample_0000/final_state_stable/state.npy
 
 CUDA_VISIBLE_DEVICES=0 deformgen-warp \
   --case rope \

@@ -418,6 +418,123 @@ def _write_initial_replay_input(
         shutil.copy2(source_robot_json, robot_dir / f"{frame_index:06d}.json")
 
 
+def _resolve_runtime_raw_state(sample_dir: Path) -> Path:
+    """Locate the raw state emitted by the runtime perturbation backend."""
+    candidates = [
+        sample_dir / "soft_body_state.npy",
+        sample_dir / "episode_0000" / "final_state" / "state.npy",
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    raise FileNotFoundError(
+        f"Runtime perturbation did not produce a raw final state under {sample_dir}."
+    )
+
+
+def _resolve_runtime_last_robot_json(sample_dir: Path) -> Path:
+    """Locate the final robot command used by a runtime perturbation replay."""
+    robot_paths = sorted((sample_dir / "episode_0000" / "robot").glob("*.json"))
+    if robot_paths:
+        return robot_paths[-1]
+    fallback = sample_dir / "robot_state.json"
+    if fallback.is_file():
+        return fallback
+    raise FileNotFoundError(
+        f"Runtime perturbation did not produce a final robot command under {sample_dir}."
+    )
+
+
+def _runtime_post_stabilization_steps(args: argparse.Namespace, repo_root: Path) -> int:
+    """Resolve the independent post-perturbation stabilization duration."""
+    if args.post_stabilization_steps is not None:
+        return int(args.post_stabilization_steps)
+    cfg = OmegaConf.load(repo_root / "cfg" / "augmentation.yaml")
+    return int(cfg.post_runtime_stabilization.final_state_stabilization_steps)
+
+
+def _run_runtime_post_stabilization(args: argparse.Namespace) -> None:
+    """Stabilize each runtime-perturbed state and export final_state_stable.
+
+    The raw runtime output remains available for debugging. Warp consumers should
+    use the copied ``final_state_stable/state.npy`` artifact instead.
+    """
+    repo_root = Path(__file__).resolve().parents[2]
+    gs, ckpt_path, case_name = _CASE_DEFAULTS[args.case]
+    run_root = Path(args.out) / f"demo_episode_{int(args.episode_id):04d}"
+    sample_dirs = sorted(path for path in run_root.glob("sample_*") if path.is_dir())
+    if not sample_dirs:
+        raise FileNotFoundError(f"No runtime samples were produced under {run_root}.")
+
+    stabilization_steps = _runtime_post_stabilization_steps(args, repo_root)
+    cfg = OmegaConf.load(repo_root / "cfg" / "augmentation.yaml")
+    hold_frames = int(cfg.post_runtime_stabilization.state_hold_frames)
+    results: list[dict[str, Any]] = []
+    for sample_dir in sample_dirs:
+        raw_state = _resolve_runtime_raw_state(sample_dir)
+        last_robot_json = _resolve_runtime_last_robot_json(sample_dir)
+        input_root = sample_dir / "post_stabilization_input"
+        if input_root.exists():
+            shutil.rmtree(input_root)
+        _write_initial_replay_input(last_robot_json, input_root, hold_frames)
+
+        replay_root = sample_dir / "post_stabilization_replay"
+        command = [
+            sys.executable,
+            str(repo_root / "experiments" / "replay.py"),
+            f"gs={gs}",
+            "env=xarm_gripper",
+            f"physics.ckpt_path={ckpt_path}",
+            f"physics.case_name={case_name}",
+            f"gt_dir={input_root}",
+            "use_qpos=false",
+            "randomize=false",
+            f"+deformed_state_path={raw_state}",
+            "save_final_state=true",
+            f"final_state_stabilization_steps={stabilization_steps}",
+            "final_state_dir_name=final_state",
+            f"output_root={replay_root}",
+            "timestamp=stable",
+            "overwrite_output=true",
+            "make_videos=false",
+            "save_depth=false",
+        ]
+        if args.collide_fric_override is not None:
+            command.append(f"physics.collide_fric_override={float(args.collide_fric_override)}")
+        command.extend(args.override)
+        print("Running independent post-perturbation stabilization:")
+        print(" ".join(command))
+        subprocess.run(command, cwd=repo_root, check=True)
+
+        source_dir = replay_root / "stable" / "episode_0000" / "final_state"
+        if not (source_dir / "state.npy").is_file():
+            raise FileNotFoundError(f"Post-stabilization state was not produced: {source_dir}")
+        stable_dir = sample_dir / "final_state_stable"
+        if stable_dir.exists():
+            shutil.rmtree(stable_dir)
+        shutil.copytree(source_dir, stable_dir)
+
+        record = {
+            "raw_state": str(raw_state),
+            "robot_command": str(last_robot_json),
+            "stabilization_steps": stabilization_steps,
+            "state_hold_frames": hold_frames,
+            "stable_state": str(stable_dir / "state.npy"),
+        }
+        metadata_path = sample_dir / "metadata.json"
+        if metadata_path.is_file():
+            metadata = json.loads(metadata_path.read_text())
+            metadata["post_stabilization"] = record
+            metadata_path.write_text(json.dumps(metadata, indent=2) + "\n")
+        results.append({"sample": sample_dir.name, **record})
+
+    summary_path = run_root / "summary.json"
+    if summary_path.is_file():
+        summary = json.loads(summary_path.read_text())
+        summary["post_stabilization"] = results
+        summary_path.write_text(json.dumps(summary, indent=2) + "\n")
+
+
 def _run_state_synthesis(args: argparse.Namespace) -> int:
     repo_root = Path(__file__).resolve().parents[2]
     asset_root = _resolve_asset_root(args, repo_root)
@@ -563,6 +680,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--run-demo-tail", action=argparse.BooleanOptionalAction, default=None, help="Override the case profile demo-tail behavior.")
     parser.add_argument("--stabilization-steps", type=int, default=None, help="Override final stabilization steps.")
     parser.add_argument(
+        "--post-stabilization-steps",
+        type=int,
+        default=None,
+        help="Override the independent runtime post-perturbation stabilization steps.",
+    )
+    parser.add_argument(
         "--state-hold-frames",
         type=int,
         default=30,
@@ -606,10 +729,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(" ".join(command))
             if args.dry_run:
                 return 0
-            return subprocess.call(
+            return_code = subprocess.call(
                 command,
                 cwd=Path(__file__).resolve().parents[2],
             )
+            if return_code != 0:
+                return return_code
+            _run_runtime_post_stabilization(args)
+            return 0
         return _run_state_synthesis(args)
     except Exception as exc:
         print(f"deformgen-perturb: {exc}", file=sys.stderr)
