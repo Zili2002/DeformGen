@@ -4,7 +4,8 @@ on:
   push:
     branches: [project-page]
     paths:
-      - "docs/project-page/**"
+      - "index.html"
+      - "static/**"
       - ".github/workflows/deploy-project-page.yml"
   workflow_dispatch:
 
@@ -27,13 +28,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_PAT }} 
+          token: ${{ secrets.GH_PAT }}
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
-          token: ${{ secrets.GH_PAT }} 
-      - name: Assemble static siten        run: |n          mkdir -p _siten          cp index.html _site/n          cp -a static _site/staticn      - name: Upload static site
+          token: ${{ secrets.GH_PAT }}
+      - name: Assemble static site
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -a static _site/static
+      - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
