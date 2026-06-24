@@ -172,6 +172,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
   --case rope \
   --mode runtime-random \
   --num-states 1 \
+  --post-stabilization-steps 30 \
   --out outputs/perturb/rope_runtime_random \
   --overwrite
 
@@ -180,6 +181,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
   --case sloth \
   --mode runtime-random \
   --num-states 1 \
+  --post-stabilization-steps 30 \
   --out outputs/perturb/sloth_runtime_random \
   --overwrite
 
@@ -188,6 +190,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
   --case cloth3 \
   --mode runtime-random \
   --num-states 1 \
+  --post-stabilization-steps 30 \
   --out outputs/perturb/cloth3_runtime_random \
   --overwrite
 ```
@@ -768,6 +771,7 @@ CUDA_VISIBLE_DEVICES=0 deformgen-perturb \
   --case rope \
   --mode runtime-random \
   --num-states 1 \
+  --post-stabilization-steps 30 \
   --out outputs/e2e/rope_state \
   --overwrite
 
