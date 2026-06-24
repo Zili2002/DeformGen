@@ -45,6 +45,8 @@ uv pip install -e .
 
 # Optional policy submodule for ACT / DP / SVLA / pi0 training and evaluation.
 git submodule update --init --recursive policy
+# If HTTPS submodule cloning is unreliable on your cluster, use SSH rewriting instead:
+# git -c url.git@github.com:.insteadOf=https://github.com/ submodule update --init --recursive policy
 cd policy
 uv pip install -e .
 cd ..
@@ -543,6 +545,13 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
+# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
+# templates use the older side/wrist image keys; map them here before training.
+features = cfg["policy"].get("input_features", {})
+if "observation.image.side" in features:
+    features["observation.images.front"] = features.pop("observation.image.side")
+if "observation.image.wrist" in features:
+    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "act_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
@@ -579,6 +588,13 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
+# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
+# templates use the older side/wrist image keys; map them here before training.
+features = cfg["policy"].get("input_features", {})
+if "observation.image.side" in features:
+    features["observation.images.front"] = features.pop("observation.image.side")
+if "observation.image.wrist" in features:
+    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "dp_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
@@ -619,6 +635,13 @@ cfg = json.loads(src.read_text())
 cfg["dataset"]["root"] = train_root
 cfg["dataset"]["repo_id"] = "local/deformgen_" + case + "_yawonly"
 cfg["dataset"]["episodes"] = None
+# DeformGen LeRobot exports use front/wrist video keys. Some upstream policy
+# templates use the older side/wrist image keys; map them here before training.
+features = cfg["policy"].get("input_features", {})
+if "observation.image.side" in features:
+    features["observation.images.front"] = features.pop("observation.image.side")
+if "observation.image.wrist" in features:
+    features["observation.images.wrist"] = features.pop("observation.image.wrist")
 cfg["output_dir"] = out
 cfg["job_name"] = "svla_" + case + "_yawonly"
 cfg["wandb"]["enable"] = False
