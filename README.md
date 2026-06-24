@@ -1,11 +1,15 @@
 # DeformGen
 
-DeformGen is a deformable-object data generation framework built on the real2sim-eval / PhysTwin simulation stack. It provides two core capabilities:
+DeformGen is a dynamics-based topology augmentation framework for deformable manipulation policy learning. It starts from sparse demonstrations and synthesizes physically plausible, topology-diverse deformable-object states together with compatible robot trajectories.
 
-1. **State perturbation**: synthesize diverse rope, sloth, and cloth3 deformable-object states.
-2. **Trajectory synthesis**: warp demonstrations to perturbed states, replay them in simulation, export LeRobot datasets, and evaluate task success.
+Rigid-object demonstration augmentation usually relies on equivariant pose changes: apply one rigid transformation to the object and the same transformation to the end-effector. This assumption breaks for deformable objects. Their state space is high-dimensional and constrained by material dynamics, and their trajectories are non-equivariant because local material points do not move as a single rigid body.
 
-The repository keeps the real2sim-eval simulation layout for compatibility. Policy training and evaluation are provided through the optional `policy/` submodule.
+DeformGen addresses these two challenges with a two-stage pipeline:
+
+1. **Dynamic topological transformation**: apply localized physical disturbances, roll out the simulator, and stabilize the resulting state to produce topology-coherent rope, sloth, and cloth3 assets.
+2. **Deformation-field trajectory warping**: lift per-particle displacements into a continuous deformation field and warp demonstrations so grasp poses and manipulation trajectories remain aligned with the deformed geometry.
+
+The generated demonstrations can be replayed, exported as LeRobot datasets, evaluated with task-specific success metrics, and used to train ACT, DP, SVLA, or pi0 policies through the optional `policy/` submodule.
 
 ## Method Names
 
@@ -828,16 +832,28 @@ deformgen-eval-success \
 
 ## Documentation
 
-- `docs/installation.md`
-- `docs/assets.md`
-- `docs/state_perturbation.md`
-- `docs/trajectory_synthesis.md`
-- `docs/replay_and_export.md`
-- `docs/policy_training.md`
-- `docs/data_format.md`
-- `docs/examples.md`
-- `docs/attribution.md`
+- `docs/assets.md`: released asset sources and installation notes.
 
-## License and Attribution
+## License
 
-This repository keeps the original license from real2sim-eval. See `LICENSE` and `docs/attribution.md`.
+This repository follows the license included in [`LICENSE`](LICENSE). Third-party components and external assets may have their own licenses; see [`docs/assets.md`](docs/assets.md) and the linked upstream repositories for details.
+
+## Acknowledgements
+
+DeformGen is built on the code framework and simulation stack of [real2sim-eval](https://github.com/kywind/real2sim-eval). We thank the real2sim-eval authors for releasing their simulator, assets, and policy-evaluation infrastructure. The optional `policy/` submodule is kept as an external dependency for policy training and evaluation.
+
+## Citation
+
+If you find this repository helpful for your research, please cite our paper:
+
+```bibtex
+@misc{zhang2026imagewam,
+      title={ImageWAM: Do World Action Models Really Need Video Generation, or Just Image Editing?}, 
+      author={Yuyang Zhang and Wenyao Zhang and Zekun Qi and He Zhang and Haitao Lin and Jingbo Zhang and Yao Mu and Xiaokang Yang and Wenjun Zeng and Xin Jin},
+      year={2026},
+      eprint={2606.19531},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2606.19531}, 
+}
+```
