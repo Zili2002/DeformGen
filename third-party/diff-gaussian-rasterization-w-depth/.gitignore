@@ -2,4 +2,6 @@ build/
 diff_gaussian_rasterization.egg-info/
 dist/
 .idea/
-third_party/
+third_party/*
+!third_party/glm/
+!third_party/glm/**
