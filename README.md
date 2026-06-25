@@ -1,5 +1,7 @@
 # DeformGen
 
+[Paper](https://arxiv.org/abs/2606.25939) | [Project Page](https://zili2002.github.io/DeformGen/) | [Hugging Face](https://huggingface.co/collections/Zili2002/deformgen-6a3c941e433459b0bfab97c3)
+
 DeformGen is a dynamics-based topology augmentation framework for deformable manipulation policy learning. It starts from sparse demonstrations and synthesizes physically plausible, topology-diverse deformable-object states together with compatible robot trajectories.
 
 Rigid-object demonstration augmentation usually relies on equivariant pose changes: apply one rigid transformation to the object and the same transformation to the end-effector. This assumption breaks for deformable objects. Their state space is high-dimensional and constrained by material dynamics, and their trajectories are non-equivariant because local material points do not move as a single rigid body.
