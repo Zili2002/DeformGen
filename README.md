@@ -853,13 +853,13 @@ DeformGen is built on the code framework and simulation stack of [real2sim-eval]
 If you find this repository helpful for your research, please cite our paper:
 
 ```bibtex
-@misc{zhang2026imagewam,
-      title={ImageWAM: Do World Action Models Really Need Video Generation, or Just Image Editing?}, 
-      author={Yuyang Zhang and Wenyao Zhang and Zekun Qi and He Zhang and Haitao Lin and Jingbo Zhang and Yao Mu and Xiaokang Yang and Wenjun Zeng and Xin Jin},
+@misc{lin2026deformgen,
+      title={DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation Policy Learning},
+      author={Zili Lin and Wenyao Zhang and Yuyang Zhang and Zekun Qi and Junyan Lin and Hanxin Zhu and Jiaolong Yang and Zhibo Chen and Yao Mu and Xiaokang Yang and Xin Jin and Wenjun Zeng},
       year={2026},
-      eprint={2606.19531},
+      eprint={2606.25939},
       archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2606.19531}, 
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2606.25939},
 }
 ```
