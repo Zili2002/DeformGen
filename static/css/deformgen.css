@@ -108,6 +108,20 @@ body {
   background: transparent;
 }
 
+
+.overview-video-wrapper {
+  margin: 0 auto 1.6rem;
+  max-width: 100%;
+}
+
+.overview-video {
+  background: #0f172a;
+  border-radius: 18px;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.16);
+  display: block;
+  width: 100%;
+}
+
 .teaser-img {
   max-height: 720px;
   object-fit: contain;
