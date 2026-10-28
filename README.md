@@ -841,6 +841,7 @@ deformgen-eval-success \
 ## Documentation
 
 - `docs/assets.md`: released asset sources and installation notes.
+- [Object appearance and physical parameters](docs/appearance-and-physics.md): color transforms, friction coefficients, and per-run overrides.
 
 ## License
 
