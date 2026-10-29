@@ -5,7 +5,7 @@
   <meta name="description" content="DeformGen: dynamics-based topology augmentation for deformable manipulation policy learning.">
   <meta name="keywords" content="DeformGen, deformable manipulation, robot learning, data augmentation, PhysTwin">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation</title>
+  <title>DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation (NeurIPS 2026)</title>
 
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
   <link rel="stylesheet" href="./static/css/bulma.min.css">
@@ -34,6 +34,7 @@
       <a class="navbar-item" href="#teaser">Overview</a>
       <a class="navbar-item" href="#method">Method</a>
       <a class="navbar-item" href="#results">Results</a>
+      <a class="navbar-item" href="#real-world">Real World</a>
       <a class="navbar-item" href="#rollouts">Rollouts</a>
       <a class="navbar-item" href="#citation">Citation</a>
     </div>
@@ -46,6 +47,7 @@
       <div class="columns is-centered">
         <div class="column has-text-centered">
           <h1 class="title is-1 publication-title">DeformGen: Dynamics-Based Topology Augmentation for Deformable Manipulation Policy Learning</h1>
+          <div class="is-size-4 venue-badge">NeurIPS 2026</div>
 
           <div class="is-size-5 publication-authors">
             <span class="author-block">Zili Lin<sup>1,2</sup>,</span>
@@ -181,15 +183,15 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Results</h2>
-        <p class="subtitle is-5">Success rate (%) on held-out deformable-object states. DG denotes the full DeformGen pipeline.</p>
+        <p class="subtitle is-5">Average success rate (%) on held-out deformable-object states (rope routing, toy packing, cloth folding), mean over three evaluation seeds. DG denotes the full DeformGen pipeline.</p>
       </div>
     </div>
 
     <div class="columns is-centered metric-row">
-      <div class="column"><div class="metric-card"><span>ACT</span><strong>59.00%</strong><p>DG average success</p></div></div>
-      <div class="column"><div class="metric-card"><span>Diffusion Policy</span><strong>37.33%</strong><p>DG average success</p></div></div>
-      <div class="column"><div class="metric-card"><span>SmolVLA</span><strong>56.50%</strong><p>DG average success</p></div></div>
-      <div class="column"><div class="metric-card"><span>&pi;<sub>0</sub></span><strong>56.67%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>ACT</span><strong>59.44%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>Diffusion Policy</span><strong>29.22%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>SmolVLA</span><strong>56.94%</strong><p>DG average success</p></div></div>
+      <div class="column"><div class="metric-card"><span>&pi;<sub>0</sub></span><strong>56.61%</strong><p>DG average success</p></div></div>
     </div>
 
     <div class="table-container result-table">
@@ -198,10 +200,10 @@
           <tr><th>Policy</th><th>1 Source</th><th>SMG*</th><th>DG*</th><th class="dg-col">DG</th></tr>
         </thead>
         <tbody>
-          <tr><td>ACT</td><td>1.33</td><td>48.17</td><td>46.83</td><td class="dg-col"><strong>59.00</strong></td></tr>
-          <tr><td>Diffusion Policy</td><td>2.33</td><td>38.00</td><td><strong>41.00</strong></td><td class="dg-col">37.33</td></tr>
-          <tr><td>SmolVLA</td><td>2.50</td><td>40.33</td><td>55.00</td><td class="dg-col"><strong>56.50</strong></td></tr>
-          <tr><td>&pi;<sub>0</sub></td><td>2.33</td><td>27.83</td><td>51.67</td><td class="dg-col"><strong>56.67</strong></td></tr>
+          <tr><td>ACT</td><td>1.39</td><td>49.28</td><td>47.06</td><td class="dg-col"><strong>59.44</strong></td></tr>
+          <tr><td>Diffusion Policy</td><td>2.33</td><td><strong>37.44</strong></td><td>32.00</td><td class="dg-col">29.22</td></tr>
+          <tr><td>SmolVLA</td><td>2.50</td><td>39.89</td><td>53.89</td><td class="dg-col"><strong>56.94</strong></td></tr>
+          <tr><td>&pi;<sub>0</sub></td><td>2.11</td><td>28.28</td><td>53.83</td><td class="dg-col"><strong>56.61</strong></td></tr>
         </tbody>
       </table>
     </div>
@@ -210,6 +212,89 @@
       <img class="figure-img" src="./static/images/figures/qualitative-comparison.png" alt="Qualitative comparison across tasks">
       <figcaption>Qualitative comparison across rope routing, toy packing, and cloth folding.</figcaption>
     </figure>
+  </div>
+</section>
+
+<section id="real-world" class="section results-section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Real-World Experiments</h2>
+        <p class="subtitle is-5">DeformGen data transfers to real robots, both zero-shot and when co-trained with real demonstrations.</p>
+      </div>
+    </div>
+
+    <h3 class="title is-4">Zero-shot sim-to-real (xArm7)</h3>
+    <p>&pi;<sub>0</sub> fine-tuned only on DeformGen data, with no real demonstrations of these tasks, is deployed directly on a real xArm7 and compared with the public &pi;<sub>0</sub> checkpoint.</p>
+    <div class="columns is-centered is-multiline real-video-row">
+      <div class="column is-full">
+        <figure class="figure-card real-video">
+          <video class="real-video-el" autoplay muted loop playsinline preload="metadata" poster="./static/videos/real/zeroshot_cloth_poster.jpg">
+            <source src="./static/videos/real/zeroshot_cloth.mp4" type="video/mp4">
+          </video>
+          <figcaption>Cloth folding: public &pi;<sub>0</sub> (left) vs. &pi;<sub>0</sub> + DeformGen (right), same initial state. 2&times; speed.</figcaption>
+        </figure>
+      </div>
+      <div class="column is-full">
+        <figure class="figure-card real-video">
+          <video class="real-video-el" autoplay muted loop playsinline preload="metadata" poster="./static/videos/real/zeroshot_rope_poster.jpg">
+            <source src="./static/videos/real/zeroshot_rope.mp4" type="video/mp4">
+          </video>
+          <figcaption>Rope routing: public &pi;<sub>0</sub> (left) vs. &pi;<sub>0</sub> + DeformGen (right), same initial state. 2&times; speed.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="table-container result-table">
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <tr><th>Zero-shot cloth folding (%)</th><th>Trend</th><th>Contact</th><th>Success</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Public &pi;<sub>0</sub></td><td>100</td><td>10</td><td>0</td></tr>
+          <tr><td>&pi;<sub>0</sub> + DeformGen</td><td>100</td><td><strong>70</strong></td><td><strong>40</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="title is-4 real-subtitle">Co-training (Franka Research 3)</h3>
+    <p>&pi;<sub>0.5</sub> is fine-tuned from the DROID checkpoint with 50 real demonstrations per task, alone or together with 1,000 DeformGen demonstrations per task retargeted from simulation. Videos show the co-trained policy (front camera).</p>
+    <div class="columns is-centered real-video-row">
+      <div class="column">
+        <figure class="figure-card real-video">
+          <video class="real-video-el" autoplay muted loop playsinline preload="metadata" poster="./static/videos/real/cotrain_rope_poster.jpg">
+            <source src="./static/videos/real/cotrain_rope.mp4" type="video/mp4">
+          </video>
+          <figcaption>Rope insertion. 2&times; speed.</figcaption>
+        </figure>
+      </div>
+      <div class="column">
+        <figure class="figure-card real-video">
+          <video class="real-video-el" autoplay muted loop playsinline preload="metadata" poster="./static/videos/real/cotrain_cloth_poster.jpg">
+            <source src="./static/videos/real/cotrain_cloth.mp4" type="video/mp4">
+          </video>
+          <figcaption>Cloth folding. 2&times; speed.</figcaption>
+        </figure>
+      </div>
+      <div class="column">
+        <figure class="figure-card real-video">
+          <video class="real-video-el" autoplay muted loop playsinline preload="metadata" poster="./static/videos/real/cotrain_toy_poster.jpg">
+            <source src="./static/videos/real/cotrain_toy.mp4" type="video/mp4">
+          </video>
+          <figcaption>Toy packing. 2&times; speed.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="table-container result-table">
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth">
+        <thead>
+          <tr><th>Co-training success rate (%)</th><th>Rope</th><th>Cloth</th><th>Toy</th><th class="dg-col">Avg.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Real only</td><td>40.0</td><td>50.0</td><td>43.3</td><td class="dg-col">44.4</td></tr>
+          <tr><td>Real + DeformGen</td><td><strong>80.0</strong></td><td><strong>60.0</strong></td><td><strong>73.3</strong></td><td class="dg-col"><strong>71.1</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 

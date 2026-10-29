@@ -290,3 +290,27 @@ pre {
   .method-card-vertical { grid-template-columns: 1fr; }
   .method-number { grid-row: auto; }
 }
+
+.venue-badge {
+  display: inline-block;
+  margin: 0.25rem 0 0.75rem;
+  padding: 0.2rem 1rem;
+  border-radius: 999px;
+  background: var(--dg-blue);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+#real-world h3.title { margin-top: 1.5rem; }
+#real-world .real-subtitle { margin-top: 2.5rem; }
+#real-world p { color: #34383d; line-height: 1.75; }
+
+.real-video-row { margin-top: 0.5rem; }
+.real-video-el {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  background: #000;
+  box-shadow: 0 16px 36px rgba(31, 35, 40, 0.08);
+}
+.real-video figcaption { font-size: 0.9rem; }
