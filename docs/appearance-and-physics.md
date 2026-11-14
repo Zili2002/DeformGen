@@ -51,7 +51,7 @@ This override does not change all contact types: gripper contact uses `physics.c
 
 ## Per-Run Overrides
 
-Instead of editing YAML for a single replay, append these flags to the `deformgen-replay-export` commands in the [README replay section](../README.md#3-replay-rendering-lerobot-export-and-success):
+Instead of editing YAML for a single replay, append these flags to the `deformgen-replay-export` commands in the [replay guide](generation.md#replay-rendering-lerobot-export-and-success):
 
 ```bash
 --override 'gs.object.color_A=[1.0,0.0,0.0,0.0,0.7,0.0,0.0,0.0,0.7]' \

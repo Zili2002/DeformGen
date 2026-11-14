@@ -1,7 +1,7 @@
 # Real-robot evaluation
 
 xArm7, UFACTORY gripper, front D455, wrist D405; pi0 checkpoints for `cloth`, `rope`, and `sloth`.
-Run commands from the repository root. Install the repository and `policy/` environment as described in the main README, then:
+Run commands from the repository root. Install the repository and `policy/` environment using the [installation guide](../docs/installation.md), then:
 
 ```bash
 pip install pyrealsense2 xarm-python-sdk PyYAML
