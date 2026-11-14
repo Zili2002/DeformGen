@@ -65,6 +65,9 @@ dependencies = [
 ]
 
 
+[project.optional-dependencies]
+real = ["pyrealsense2>=2.58.3", "xarm-python-sdk>=1.18.4", "PyYAML>=6.0"]
+
 [project.scripts]
 deformgen-perturb = "deformgen.cli.perturb_states:main"
 deformgen-warp = "deformgen.cli.warp_trajectory:main"
@@ -77,5 +80,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["deformgen*", "sim*", "experiments*"]
+include = ["deformgen*", "sim*", "experiments*", "real*"]
 exclude = ["cfg*", "assets*", "docs*", "examples*", "scripts*", "third-party*"]
+
+[tool.setuptools.package-data]
+real = ["tasks/*.yaml", "robot.example.yaml"]

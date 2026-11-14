@@ -41,6 +41,8 @@ DeformGen/
 
 ## Installation
 
+For xArm7 and RealSense deployment, see [real/README.md](real/README.md).
+
 ```bash
 git clone https://github.com/Zili2002/DeformGen.git DeformGen
 cd DeformGen
