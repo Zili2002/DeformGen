@@ -1,0 +1,58 @@
+# Copy to real/robot.local.yaml. Replace the hardware IDs and verify calibration.
+robot:
+  ip: ROBOT_IP
+  calibration_confirmed: false
+  auto_enable_for_authorized_motion: true
+  expected_axis_count: 7
+  ik_solver: firmware
+  firmware_ik_equivalent_euler_retry: true
+  firmware_ik_retry_position_tolerance_mm: 0.1
+  firmware_ik_retry_orientation_tolerance_deg: 0.01
+  gripper_scale: 800.0
+  use_controller_tcp_offset: true
+  expected_controller_tcp_offset_mm_degrees: [0, 0, 172, 0, 0, 0]
+  # Measured transform from the physical flange to the policy's link7 frame.
+  flange_to_policy_eef_mm_degrees: [0, 0, 0, 0, 0, 0]
+  reset_policy_state: [0.2568, 0.0, 0.4005, 0.0, 1.0, 0.0, 0.0, 0.0]
+  gripper_collision_urdf: assets/robots/xarm/xarm7_with_gripper_collision.urdf
+  gripper_geometry_opening_samples: 9
+  safety:
+    control_hz: 30.0
+    reset_cartesian_speed_mm_s: 150.0
+    reset_cartesian_acceleration_mm_s2: 1000.0
+    reset_guard_tcp_min_mm: [150.0, -300.0, 0.0]
+    reset_guard_tcp_max_mm: [700.0, 300.0, 450.0]
+    reset_position_tolerance_m: 0.025
+    reset_orientation_tolerance_deg: 15.0
+    reset_gripper_must_be_open: true
+    command_timeout_s: 0.20
+    max_chunk_steps: 50
+    max_episode_steps: 900
+    gripper_open_threshold: 0.35
+    gripper_open_pulse: 800
+    gripper_closed_pulse: 0
+    gripper_speed: 1000
+    gripper_max_normalized_step: 0.06666666666666667
+    max_joint_delta_norm_rad: 0.10
+    velocity_gain: 0.15
+    command_check_interval_s: 0.02
+    velocity_command_duration_s: 0.05
+    # Table-plane guard in robot base coordinates; verify for your setup.
+    gripper_geometry_clearance_mm: 0.0
+cameras:
+  front:
+    model: RealSense D455
+    serial: FRONT_SERIAL
+    width: 848
+    height: 480
+    fps: 30
+    auto_exposure: true
+    auto_white_balance: true
+  wrist:
+    model: RealSense D405
+    serial: WRIST_SERIAL
+    width: 848
+    height: 480
+    fps: 30
+    auto_exposure: true
+    auto_white_balance: true

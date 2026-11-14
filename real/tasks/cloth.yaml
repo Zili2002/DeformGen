@@ -1,0 +1,27 @@
+policy:
+  repo_id: Zili2002/DeformGen-Checkpoints
+  revision: 745f9666ac2a0b4a1c726789765083f9b9e8224f
+  case: cloth3
+  mode: yawonly
+  checkpoint_step: 99999
+  local_dir: release/DeformGen-Checkpoints/cloth3/pi0/yawonly/checkpoint
+  training_config: pi0_lora_fold_cloth
+  single_model:
+    checkpoint_step: 59
+    local_dir: release/DeformGen-Checkpoints/cloth3/pi0/single/checkpoint
+    training_config: pi0_lora_fold_cloth
+  # Untouched pi0 base with yawonly task statistics; not a task-finetuned baseline.
+  base_model:
+    local_dir: release/openpi/openpi-assets/checkpoints/pi0_base
+    training_config: pi0_base_fold_cloth
+    norm_stats_dir: release/DeformGen-Checkpoints/cloth3/pi0/yawonly/checkpoint
+  task: fold_cloth
+  action_dim: 8
+  action_horizon: 50
+  inference_seed: 0
+  image_preprocessing:
+    pre_crop: [0,480,100,748]
+    pre_resize: [240,240]
+    crop: [200,200]
+    resize: [240,240]
+    overlay: null

@@ -1,0 +1,27 @@
+policy:
+  repo_id: Zili2002/DeformGen-Checkpoints
+  revision: 745f9666ac2a0b4a1c726789765083f9b9e8224f
+  case: rope
+  mode: yawonly
+  checkpoint_step: 99999
+  local_dir: release/DeformGen-Checkpoints/rope/pi0/yawonly/checkpoint
+  training_config: pi0_lora_insert_rope
+  single_model:
+    checkpoint_step: 133
+    local_dir: release/DeformGen-Checkpoints/rope/pi0/single/checkpoint
+    training_config: pi0_lora_insert_rope
+  # Untouched pi0 base with yawonly task statistics; not a task-finetuned baseline.
+  base_model:
+    local_dir: release/openpi/openpi-assets/checkpoints/pi0_base
+    training_config: pi0_base_insert_rope
+    norm_stats_dir: release/DeformGen-Checkpoints/rope/pi0/yawonly/checkpoint
+  task: insert_rope
+  action_dim: 8
+  action_horizon: 50
+  inference_seed: 0
+  image_preprocessing:
+    pre_crop: [0,480,0,848]
+    pre_resize: [120,212]
+    crop: [110,202]
+    resize: [120,212]
+    overlay: null

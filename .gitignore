@@ -7,10 +7,12 @@ __pycache__/
 .ruff_cache/
 
 # Environments
+/real/*.local.yaml
 .venv/
 .env
 
 # DeformGen outputs and large artifacts
+/release/
 log/
 outputs/
 data/
